@@ -1,0 +1,452 @@
+{
+    "experiences": [
+        {
+            "_id": "microlight-layout-001",
+            "company": "Microlight Technology",
+            "position": "Layout Engineer",
+            "startDate": "2015-08-01",
+            "endDate": "2016-08-31",
+            "description": "Participated in analog layout design and verification of multiple chips based on HLMC 40nm/55nm process",
+            "projects": [
+                {
+                    "name": "Chip Layout Design Projects",
+                    "description": "Multiple chip layout design and verification projects based on HLMC 40nm/55nm process",
+                    "background": {
+                        "problem": "Need to implement high-performance analog layout design for various chip projects",
+                        "solution": "Utilized Cadence Virtuoso for layout design and verification on HLMC process",
+                        "impact": "Successfully delivered multiple chip projects meeting performance requirements"
+                    },
+                    "responsibilities": [
+                        "Digital Cell Library analog layout design for HLMC 40nm process",
+                        "Fingerprint chip oscillator module layout design and verification for Beidou Xiaolajiao mobile phone",
+                        "Analog layout implementation for 16MP/4MP/2MP pixel sensors in HD Camera project",
+                        "DRC/LVS verification and parameter extraction",
+                        "Circuit simulation and performance verification"
+                    ],
+                    "techStack": [
+                        "Cadence Virtuoso",
+                        "HLMC 55nm Process",
+                        "HLMC 40nm Process",
+                        "Analog Layout Design",
+                        "DRC/LVS",
+                        "Circuit Simulation"
+                    ]
+                }
+            ],
+            "achievements": [
+                "Successfully completed layout design for multiple chip projects",
+                "Ensured all designs met performance requirements through verification",
+                "Contributed to fingerprint recognition and HD camera sensor projects"
+            ],
+            "isCurrentRole": false,
+            "skills": [
+                "IC Layout Design",
+                "Analog Circuit Layout",
+                "DRC/LVS Verification",
+                "Circuit Simulation",
+                "Process Technology"
+            ],
+            "order": 3
+        },
+        {
+            "_id": "analog-circuit-001",
+            "company": "Semiconductor Company",
+            "position": "Analog Circuit Engineer",
+            "startDate": "2014-03-01",
+            "endDate": "2014-11-30",
+            "description": "Participated in the implementation, verification and simulation of analog circuit power module for Apple camera sensor (Sony IMX series)",
+            "projects": [
+                {
+                    "name": "Sony IMX220 Camera Sensor Power Module",
+                    "description": "Design and verification of power management module for Sony IMX220 camera sensor (iPhone 6 12MP) based on Fujitsu 50nm process",
+                    "background": {
+                        "problem": "Need to develop high-performance, low-power power management module for iPhone 6 camera sensor",
+                        "solution": "Implemented power management module design and verification based on Fujitsu 50nm process",
+                        "impact": "Successfully applied to iPhone 6 camera module, ensuring product stability and performance"
+                    },
+                    "responsibilities": [
+                        "Implementation of analog circuit power module for Apple camera sensor (Sony IMX series)",
+                        "Circuit verification and simulation",
+                        "Design optimization based on Fujitsu 50nm process"
+                    ],
+                    "techStack": [
+                        "Analog Circuit Design",
+                        "Power Management",
+                        "Fujitsu 50nm Process"
+                    ]
+                }
+            ],
+            "achievements": [
+                "Successfully completed design and verification of iPhone 6 camera sensor power module",
+                "Ensured product stability and reliability"
+            ],
+            "isCurrentRole": false,
+            "skills": [
+                "Analog Circuit Design",
+                "Power Management",
+                "Circuit Verification",
+                "Circuit Simulation"
+            ],
+            "order": 2
+        },
+        {
+            "_id": "huawei-backend-001",
+            "company": "Huawei",
+            "position": "Backend Engineer",
+            "startDate": "2014-12-01",
+            "endDate": "2015-12-31",
+            "description": "Participated in the development of AIFlow algorithm training platform at Huawei 2012 Lab and India Telecom Base Station System",
+            "projects": [
+                {
+                    "name": "AIFlow Algorithm Training Platform",
+                    "description": "Development of algorithm training platform under Huawei 2012 Lab",
+                    "background": {
+                        "problem": "Need a unified platform to support machine learning and deep learning algorithm development and training",
+                        "solution": "Developed multi-framework, multi-resource algorithm training platform",
+                        "impact": "Significantly improved algorithm development efficiency and resource utilization"
+                    },
+                    "responsibilities": [
+                        "Deep learning management module implementation",
+                        "Task scheduling service development",
+                        "Email service resource approval system implementation"
+                    ],
+                    "techStack": [
+                        "Spring Cloud",
+                        "Nacos",
+                        "Gateway",
+                        "MyBatis-Plus",
+                        "RabbitMQ",
+                        "Redis",
+                        "MongoDB",
+                        "Elasticsearch"
+                    ]
+                },
+                {
+                    "name": "India Telecom Base Station System",
+                    "description": "Base station management system built for Huawei's Indian telecom customer",
+                    "background": {
+                        "problem": "Need efficient management and monitoring of large-scale base station equipment",
+                        "solution": "Developed base station management system integrating equipment management, maintenance, and personnel management",
+                        "impact": "Improved base station operation efficiency and equipment management"
+                    },
+                    "responsibilities": [
+                        "Backend module implementation",
+                        "Performance optimization",
+                        "Database sharding",
+                        "Code refactoring"
+                    ],
+                    "techStack": [
+                        "Spring MVC",
+                        "MyBatis",
+                        "Redis",
+                        "RabbitMQ",
+                        "JSP",
+                        "Bootstrap",
+                        "Maven",
+                        "SVN"
+                    ]
+                }
+            ],
+            "achievements": [
+                "Successfully built multi-framework algorithm training platform",
+                "Implemented base station system performance optimization, improving query efficiency",
+                "Completed database sharding, enhancing system scalability"
+            ],
+            "isCurrentRole": false,
+            "skills": [
+                "Java Development",
+                "Spring Cloud",
+                "Microservice Architecture",
+                "Database Optimization",
+                "System Design"
+            ],
+            "order": 1
+        },
+        {
+            "_id": "huawei-research-001",
+            "company": "Huawei (Chengdu Research Institute)",
+            "position": "Java Developer",
+            "startDate": "2016-12-01",
+            "endDate": "2020-01-31",
+            "description": "Participated in the development and maintenance of multiple important Huawei projects",
+            "projects": [
+                {
+                    "name": "Huawei AIFlow Algorithm Training Platform",
+                    "description": "Development of AIFlow algorithm training platform under Huawei 2012 Lab, implementing online training platform for machine learning and deep learning",
+                    "background": {
+                        "problem": "Need a comprehensive platform for machine learning and deep learning algorithm development and training",
+                        "solution": "Developed an integrated platform supporting multiple frameworks and distributed computing resources",
+                        "impact": "Enabled efficient algorithm development and resource management across the organization"
+                    },
+                    "responsibilities": [
+                        "Backend Deep Learning Management Implementation with Redis delayed queue",
+                        "Training module development supporting TensorFlow and Caffe frameworks",
+                        "Dataset module implementation with MongoDB integration",
+                        "Log batch import system with Elasticsearch",
+                        "Thread pool multi-threading task scheduling implementation",
+                        "Email service resource approval system with MQ message queue"
+                    ],
+                    "techStack": [
+                        "Spring Cloud",
+                        "Nacos",
+                        "Gateway",
+                        "MyBatis-Plus",
+                        "RabbitMQ",
+                        "Redis",
+                        "MongoDB",
+                        "Elasticsearch",
+                        "TensorFlow",
+                        "Caffe",
+                        "JDK1.8",
+                        "Git",
+                        "DevCloud"
+                    ]
+                },
+                {
+                    "name": "Huawei India Telecom BA Base Station System",
+                    "description": "Base station management system built for Huawei's Indian telecom customer, managing and analyzing the operational status of equipment",
+                    "background": {
+                        "problem": "Need efficient management and monitoring system for large-scale base station equipment",
+                        "solution": "Developed comprehensive base station management system with performance optimization",
+                        "impact": "Improved operational efficiency and maintenance management of base station equipment"
+                    },
+                    "responsibilities": [
+                        "Backend module implementation for base station data aggregation",
+                        "AOP encryption/decryption implementation",
+                        "Performance optimization for slow SQL queries",
+                        "Database sharding implementation",
+                        "Code refactoring for improved maintainability"
+                    ],
+                    "techStack": [
+                        "Spring MVC",
+                        "MyBatis",
+                        "Redis",
+                        "RabbitMQ",
+                        "JSP",
+                        "Bootstrap",
+                        "Maven",
+                        "SVN",
+                        "JDK1.7"
+                    ]
+                }
+            ],
+            "achievements": [
+                "Successfully developed and launched AIFlow platform supporting multiple ML frameworks",
+                "Implemented high-performance base station management system",
+                "Optimized system performance through database sharding and SQL optimization",
+                "Developed robust task scheduling and resource management systems"
+            ],
+            "isCurrentRole": false,
+            "skills": [
+                "Java Development",
+                "Spring Cloud/MVC",
+                "Microservices Architecture",
+                "Database Optimization",
+                "System Design",
+                "Performance Tuning",
+                "Machine Learning Platforms"
+            ],
+            "order": 4
+        },
+        {
+            "_id": "digital-design-001",
+            "company": "Digital Design Studio",
+            "position": "Java Developer",
+            "startDate": "2020-07-01",
+            "endDate": "2021-07-31",
+            "description": "Participated in product requirement analysis, architecture design, coding, technical documentation writing and development work, responsible for backend service development",
+            "projects": [
+                {
+                    "name": "Second-hand Car Sales Service System",
+                    "description": "A comprehensive second-hand car sales service system including management backend system, API service, payment system, and customer service system",
+                    "background": {
+                        "problem": "Need to build an integrated platform for second-hand car sales management and customer service",
+                        "solution": "Developed a comprehensive system with WebView hybrid approach for multi-platform support",
+                        "impact": "Successfully launched an efficient platform reducing multi-end development costs"
+                    },
+                    "responsibilities": [
+                        "Management backend system service construction and architecture design",
+                        "Database design and development environment setup",
+                        "Implementation of permission control using Satoken+Redis",
+                        "Distributed lock implementation with Lock4j+Redis",
+                        "Timer-based sales allocation system with SMS and push notifications",
+                        "Integration of JPush for group-oriented push functionality",
+                        "Service monitoring and logging with Skywalking",
+                        "WebView hybrid development for Android App",
+                        "Integration of payment SDKs (Alipay, WeChat) and push notifications"
+                    ],
+                    "techStack": [
+                        "Spring Boot",
+                        "MyBatis-Plus",
+                        "Redis",
+                        "MySQL",
+                        "Elasticsearch",
+                        "Android",
+                        "WebView",
+                        "Satoken",
+                        "Lock4j",
+                        "MinIO",
+                        "Skywalking",
+                        "JDK1.8",
+                        "Android SDK 29",
+                        "Maven",
+                        "Gradle",
+                        "SVN"
+                    ]
+                }
+            ],
+            "achievements": [
+                "Successfully designed and implemented comprehensive second-hand car sales platform",
+                "Optimized development efficiency through WebView hybrid approach",
+                "Implemented robust monitoring and logging system",
+                "Integrated multiple third-party services and SDKs"
+            ],
+            "isCurrentRole": false,
+            "skills": [
+                "Java Development",
+                "Spring Boot",
+                "Android Development",
+                "System Architecture",
+                "Database Design",
+                "API Development",
+                "Third-party Integration",
+                "Performance Monitoring"
+            ],
+            "order": 5
+        },
+        {
+            "_id": "software-dev-001",
+            "company": "Software Company",
+            "position": "Software Developer",
+            "startDate": "2021-07-01",
+            "endDate": "Present",
+            "description": "Full stack development engineer, responsible for architecture design and development of multiple projects",
+            "projects": [
+                {
+                    "name": "Enterprise Information Management System",
+                    "description": "Enterprise information system upgrade, building information backend system for personnel organization structure, project report management, project audit process, and ODS file generation",
+                    "background": {
+                        "problem": "Need to modernize legacy enterprise information system with new features",
+                        "solution": "Developed new system based on Ruoyi-plus framework with modern architecture",
+                        "impact": "Successfully upgraded enterprise information management capabilities"
+                    },
+                    "responsibilities": [
+                        "Project architecture design",
+                        "Database schema design",
+                        "Requirement analysis",
+                        "Business logic implementation"
+                    ],
+                    "techStack": [
+                        "Spring Boot",
+                        "Redis",
+                        "MySQL",
+                        "Vue.js 2",
+                        "Element UI",
+                        "Ruoyi Plus"
+                    ]
+                },
+                {
+                    "name": "Second-hand Mobile Phone Trading Platform",
+                    "description": "A B2B&B2C marketplace project focusing on second-hand mobile phone sales with comprehensive features",
+                    "background": {
+                        "problem": "Need a multi-end platform for second-hand mobile phone trading",
+                        "solution": "Developed serverless solution using UniCloud with multiple service integrations",
+                        "impact": "Created efficient platform for B2B&B2C second-hand phone trading"
+                    },
+                    "responsibilities": [
+                        "Multi-end technical implementation",
+                        "Database design and server setup",
+                        "Quality inspection system development",
+                        "Third-party service integration",
+                        "Frontend features implementation"
+                    ],
+                    "techStack": [
+                        "Uniapp",
+                        "UniCloud",
+                        "MongoDB",
+                        "Elasticsearch",
+                        "Pinia",
+                        "Redis",
+                        "Java",
+                        "VantUI",
+                        "NVUI"
+                    ]
+                },
+                {
+                    "name": "Knight Delivery Mini Program",
+                    "description": "Full-stack development of WeChat mini program with Android app packaging capability",
+                    "background": {
+                        "problem": "Need multi-platform delivery service system",
+                        "solution": "Developed unified solution using Uniapp for multiple endpoints",
+                        "impact": "Successfully launched integrated delivery platform"
+                    },
+                    "responsibilities": [
+                        "Mini program frontend development",
+                        "Multi-tenant user system implementation",
+                        "Payment integration",
+                        "Location-based services",
+                        "Order management system"
+                    ],
+                    "techStack": [
+                        "Uniapp",
+                        "Vue.js 3",
+                        "Spring Boot",
+                        "MyBatis",
+                        "Redis",
+                        "Docker",
+                        "Element UI",
+                        "Vant",
+                        "MinIO"
+                    ]
+                },
+                {
+                    "name": "Rikiyun Corporation Warehouse Management System",
+                    "description": "Comprehensive warehouse management system with multi-warehouse ERP backend services",
+                    "background": {
+                        "problem": "Need to modernize existing warehouse management system",
+                        "solution": "Implemented modern architecture with smart features and analytics",
+                        "impact": "Enhanced warehouse operations efficiency and management capabilities"
+                    },
+                    "responsibilities": [
+                        "System architecture upgrade",
+                        "Frontend rebuild with Vue3",
+                        "Core features implementation",
+                        "Performance optimization",
+                        "Cloud service integration"
+                    ],
+                    "techStack": [
+                        "Vue.js 3",
+                        "Vuetify",
+                        "Pinia",
+                        "Spring Boot",
+                        "MyBatis-Plus",
+                        "Redis",
+                        "MySQL",
+                        "Skywalking",
+                        "Elasticsearch",
+                        "AWS ECS",
+                        "Git"
+                    ]
+                }
+            ],
+            "achievements": [
+                "Successfully delivered multiple full-stack projects",
+                "Implemented modern architectures and cloud solutions",
+                "Integrated various third-party services and payment systems",
+                "Optimized system performance and user experience"
+            ],
+            "isCurrentRole": true,
+            "skills": [
+                "Full Stack Development",
+                "System Architecture",
+                "Cloud Services",
+                "Performance Optimization",
+                "Database Design",
+                "API Development",
+                "Frontend Development",
+                "DevOps"
+            ],
+            "order": 6
+        }
+    ]
+}
