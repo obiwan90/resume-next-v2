@@ -7,7 +7,6 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { MessageSquare, Send, Trash2 } from 'lucide-react'
-import { Navbar } from "@/components/layout/navbar"
 
 // In a real application, this would be fetched from a database
 const initialMessages = [
@@ -45,17 +44,13 @@ export function AppSpeakingPage() {
   }, [newMessage.content])
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container px-4 py-8">
-        <motion.h1
-          className="text-3xl font-bold mb-8 text-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Leave Your Mark
-        </motion.h1>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl font-bold mb-8">Speaking</h1>
         <div className="max-w-2xl mx-auto mb-8">
           <Card className="p-4">
             <div className="mb-4">
@@ -117,7 +112,7 @@ export function AppSpeakingPage() {
             ))}
           </AnimatePresence>
         </motion.div>
-      </main>
-    </div>
+      </motion.div>
+    </>
   )
 }

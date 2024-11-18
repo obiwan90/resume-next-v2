@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { ExperienceTimeline } from "@/components/experience-timeline"
-import { Navbar } from "@/components/layout/navbar"
 
 interface Experience {
   _id: string
@@ -36,18 +35,15 @@ export function AppExperiencePage({ experiences }: AppExperiencePageProps) {
   console.log('Experience page data:', JSON.stringify(experiences, null, 2))
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container py-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h1 className="text-4xl font-bold mb-8">Work Experience</h1>
-          <ExperienceTimeline experiences={experiences} />
-        </motion.div>
-      </main>
-    </div>
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="text-4xl font-bold mb-8">Work Experience</h1>
+        <ExperienceTimeline experiences={experiences} />
+      </motion.div>
+    </>
   )
 }

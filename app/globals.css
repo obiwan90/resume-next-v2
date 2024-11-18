@@ -10,6 +10,18 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  .animate-slideInLeft {
+    animation: slideInLeft 0.3s ease-out;
+  }
+
+  .animate-slideOutLeft {
+    animation: slideOutLeft 0.3s ease-in;
+  }
+
+  .logo-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
 }
 
 @layer base {
@@ -81,4 +93,54 @@ body {
 
 .container {
   @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutLeft {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .logo-hidden {
+    opacity: 0;
+    transform: translateX(-1rem);
+    pointer-events: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .logo-visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+}
+
+@layer components {
+  .nav-logo {
+    @apply text-xl font-semibold transition-all duration-300 ease-in-out;
+  }
+
+  .nav-logo-hidden {
+    @apply opacity-0 -translate-x-4;
+  }
+
+  .nav-logo-visible {
+    @apply opacity-100 translate-x-0;
+  }
 }

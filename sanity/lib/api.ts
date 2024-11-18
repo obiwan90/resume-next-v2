@@ -1,5 +1,5 @@
 import { client } from './client'
-import { experiencesQuery, projectsQuery, recentProjectsQuery } from './queries'
+import { experiencesQuery, projectsQuery, recentProjectsQuery, currentExperienceQuery } from './queries'
 
 export async function getExperiences() {
     const options = {
@@ -26,4 +26,13 @@ export async function getRecentProjects() {
     }
 
     return client.fetch(recentProjectsQuery, {}, options)
+}
+
+export async function getCurrentExperience() {
+    const options = {
+        cache: 'no-store' as const,
+        next: { revalidate: 0 }
+    }
+
+    return client.fetch(currentExperienceQuery, {}, options)
 } 

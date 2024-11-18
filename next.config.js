@@ -35,6 +35,13 @@ const nextConfig = {
             },
         ]
     },
+    webpack: (config) => {
+        config.module.rules.push({
+            test: /\.topojson$/,
+            use: 'json-loader',
+        })
+        return config
+    },
 }
 
 module.exports = nextConfig 

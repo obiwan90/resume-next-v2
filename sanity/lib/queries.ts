@@ -58,4 +58,27 @@ export const recentProjectsQuery = groq`*[_type == "project" && isRecentUpdate =
   tags,
   publishedAt,
   isRecentUpdate
+}`
+
+export const currentExperienceQuery = groq`*[_type == "experience" && isCurrentRole == true][0] {
+  _id,
+  company,
+  position,
+  startDate,
+  endDate,
+  isCurrentRole,
+  description,
+  projects[]{
+    name,
+    description,
+    background{
+      problem,
+      solution,
+      impact
+    },
+    responsibilities[],
+    techStack[]
+  },
+  skills[],
+  achievements[]
 }` 

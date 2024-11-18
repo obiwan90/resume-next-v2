@@ -1,18 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider"
-import localFont from 'next/font/local'
+import { Template } from "@/components/layout/template"
 import "./globals.css"
-
-const geistSans = localFont({
-  src: '../public/fonts/GeistVF.woff2',
-  variable: '--font-geist-sans',
-  weight: '100 900',
-});
-
-const geistMono = localFont({
-  src: '../public/fonts/GeistMonoVF.woff2',
-  variable: '--font-geist-mono',
-  weight: '100 900',
-});
 
 export default function RootLayout({
   children,
@@ -21,14 +9,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Template>
+            {children}
+          </Template>
         </ThemeProvider>
       </body>
     </html>
