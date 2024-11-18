@@ -22,6 +22,19 @@ const nextConfig = {
             }
         ],
     },
+    headers: async () => {
+        return [
+            {
+                source: '/experience',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-store, must-revalidate',
+                    },
+                ],
+            },
+        ]
+    },
 }
 
 module.exports = nextConfig 

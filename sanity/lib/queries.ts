@@ -40,4 +40,22 @@ export const experiencesQuery = groq`*[_type == "experience"] | order(order asc)
   "skills": skills[],
   "achievements": achievements[],
   order
+}`
+
+export const recentProjectsQuery = groq`*[_type == "project" && isRecentUpdate == true] | order(publishedAt desc) {
+  _id,
+  title,
+  slug,
+  description,
+  coverImage {
+    asset->{
+      url
+    },
+    alt
+  },
+  projectUrl,
+  githubUrl,
+  tags,
+  publishedAt,
+  isRecentUpdate
 }` 

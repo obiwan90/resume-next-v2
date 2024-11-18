@@ -64,6 +64,19 @@ export const project = {
             name: 'publishedAt',
             title: 'Published At',
             type: 'datetime',
+        },
+        {
+            name: 'isRecentUpdate',
+            title: 'Recent Update',
+            type: 'boolean',
+            description: 'Show this project in recent updates section',
+            initialValue: false,
         }
-    ]
+    ],
+    preview: {
+        select: {
+            title: 'title',
+            media: 'coverImage'
+        }
+    }
 } 

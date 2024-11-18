@@ -34,6 +34,7 @@ import {
 import { FaJava } from 'react-icons/fa'
 import { RiReactjsLine } from 'react-icons/ri'
 import { HiMail } from 'react-icons/hi'
+import { Github, ExternalLink, FileText } from "lucide-react"
 
 const socialLinks = [
   { icon: HiMail, href: "mailto:your.email@example.com", label: "Email" },
@@ -91,26 +92,25 @@ const skills = {
   }
 }
 
-const projects = [
-  {
-    title: "AI-Powered Task Manager",
-    description: "A smart task management app that uses AI to prioritize and categorize tasks",
-    image: "https://picsum.photos/seed/ai-task/800/400",
-    tags: ["React", "Node.js", "OpenAI API", "MongoDB"]
-  },
-  {
-    title: "Blockchain Voting System",
-    description: "A secure and transparent voting system built on blockchain technology",
-    image: "https://picsum.photos/seed/blockchain/800/400",
-    tags: ["Solidity", "Ethereum", "Web3.js", "Next.js"]
-  },
-  {
-    title: "AR Shopping Experience",
-    description: "An augmented reality app for trying on clothes virtually",
-    image: "https://picsum.photos/seed/ar-shop/800/400",
-    tags: ["React Native", "ARKit", "ARCore", "Node.js"]
+interface Project {
+  _id: string
+  title: string
+  description: string
+  coverImage: {
+    asset: {
+      url: string
+    }
+    alt: string
   }
-]
+  projectUrl?: string
+  githubUrl?: string
+  tags: string[]
+  isRecentUpdate: boolean
+}
+
+interface PortfolioPageProps {
+  recentProjects: Project[]
+}
 
 // 定义一些通用的动画变体
 const fadeInUp = {
@@ -137,7 +137,7 @@ const cardHover = {
   }
 }
 
-export function PortfolioPage() {
+export function PortfolioPage({ recentProjects }: PortfolioPageProps) {
   const [typedName, setTypedName] = useState("")
   const fullName = "Developer Name"
 
@@ -294,85 +294,78 @@ export function PortfolioPage() {
 
         <motion.section
           className="mb-12"
-          variants={staggerContainer}
-          initial="initial"
-          animate="animate"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <motion.h2
-            className="mb-6 text-2xl font-bold"
-            variants={fadeInUp}
-          >
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <span className="h-1.5 w-4 bg-primary rounded-full"></span>
             Recent Projects
-          </motion.h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {projects.map((project, index) => (
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {recentProjects.map((project) => (
               <motion.div
-                key={index}
-                variants={fadeInUp}
-                whileHover={cardHover.hover}
+                key={project._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.3 }}
               >
-                <Card className="overflow-hidden">
+                <Card className="overflow-hidden h-full">
                   <div className="relative aspect-video">
                     <Image
-                      src={project.image}
-                      alt={project.title}
+                      src={project.coverImage?.asset?.url || `https://picsum.photos/seed/${project._id}/800/600`}
+                      alt={project.coverImage?.alt || project.title}
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="object-cover"
                     />
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-t from-black to-transparent"
-                      initial={{ opacity: 0 }}
-                      whileHover={{ opacity: 0.8 }}
-                    >
-                      <div className="absolute inset-0 p-4 flex flex-col justify-end">
-                        <motion.h3
-                          className="font-medium text-white text-lg mb-2"
-                          initial={{ y: 20, opacity: 0 }}
-                          whileHover={{ y: 0, opacity: 1 }}
-                        >
-                          {project.title}
-                        </motion.h3>
-                        <motion.p
-                          className="text-sm text-gray-300 mb-2"
-                          initial={{ y: 20, opacity: 0 }}
-                          whileHover={{ y: 0, opacity: 1 }}
-                        >
-                          {project.description}
-                        </motion.p>
-                        <motion.div
-                          className="flex flex-wrap gap-2"
-                          variants={staggerContainer}
-                        >
-                          {project.tags.map((tag, tagIndex) => (
-                            <motion.div
-                              key={tagIndex}
-                              variants={{
-                                initial: { opacity: 0, scale: 0.8 },
-                                animate: { opacity: 1, scale: 1 }
-                              }}
-                            >
-                              <Badge variant="secondary" className="text-xs">
-                                {tag}
-                              </Badge>
-                            </motion.div>
-                          ))}
-                        </motion.div>
+                    <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                        <h3 className="text-xl font-bold text-white">{project.title}</h3>
+                        <div className="space-y-4">
+                          <p className="text-gray-200 text-sm">{project.description}</p>
+                          <div className="flex gap-2">
+                            {project.githubUrl && (
+                              <Button size="sm" variant="secondary" asChild>
+                                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                                  <Github className="h-4 w-4 mr-2" />
+                                  Code
+                                </a>
+                              </Button>
+                            )}
+                            {project.projectUrl && (
+                              <Button size="sm" variant="secondary" asChild>
+                                <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
+                                  <FileText className="h-4 w-4 mr-2" />
+                                  Doc
+                                </a>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </motion.div>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <div className="flex flex-wrap gap-2">
+                      {project.tags?.map((tag) => (
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
                 </Card>
               </motion.div>
             ))}
           </div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-          >
-            <Button className="mt-6" variant="outline">
-              See more projects
+          <div className="mt-8 text-center">
+            <Button asChild>
+              <Link href="/projects">
+                View All Projects
+              </Link>
             </Button>
-          </motion.div>
+          </div>
         </motion.section>
       </main>
     </div>
