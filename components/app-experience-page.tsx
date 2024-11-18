@@ -4,46 +4,50 @@ import { motion } from "framer-motion"
 import { ExperienceTimeline } from "@/components/experience-timeline"
 import { Navbar } from "@/components/layout/navbar"
 
-// 定义动画变体
-const pageVariants = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -20 }
+interface Experience {
+  _id: string
+  company: string
+  position: string
+  startDate: string
+  endDate: string | null
+  isCurrentRole: boolean
+  description: string
+  projects: Array<{
+    name: string
+    description: string
+    background: {
+      problem: string
+      solution: string
+      impact: string
+    }
+    responsibilities: string[]
+    techStack: string[]
+  }>
+  skills: string[]
+  achievements: string[]
+  order: number
 }
 
-const titleVariants = {
-  initial: { opacity: 0, x: -20 },
-  animate: { opacity: 1, x: 0 },
-  transition: { duration: 0.5, delay: 0.2 }
+interface AppExperiencePageProps {
+  experiences: Experience[]
 }
 
-export function AppExperiencePage() {
+export function AppExperiencePage({ experiences }: AppExperiencePageProps) {
+  console.log('Experience page data:', JSON.stringify(experiences, null, 2))
+
   return (
-    <motion.div
-      className="min-h-screen bg-background"
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={pageVariants}
-      transition={{ duration: 0.5 }}
-    >
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container py-12">
         <motion.div
-          className="space-y-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          <motion.h1
-            className="text-4xl font-bold mb-8"
-            variants={titleVariants}
-          >
-            Work Experience
-          </motion.h1>
-          <ExperienceTimeline />
+          <h1 className="text-4xl font-bold mb-8">Work Experience</h1>
+          <ExperienceTimeline experiences={experiences} />
         </motion.div>
       </main>
-    </motion.div>
+    </div>
   )
 }
