@@ -22,26 +22,6 @@ const nextConfig = {
             }
         ],
     },
-    headers: async () => {
-        return [
-            {
-                source: '/experience',
-                headers: [
-                    {
-                        key: 'Cache-Control',
-                        value: 'no-store, must-revalidate',
-                    },
-                ],
-            },
-        ]
-    },
-    webpack: (config) => {
-        config.module.rules.push({
-            test: /\.topojson$/,
-            use: 'json-loader',
-        })
-        return config
-    },
 }
 
 module.exports = nextConfig 

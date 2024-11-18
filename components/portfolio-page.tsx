@@ -33,7 +33,7 @@ import {
 import { FaJava } from 'react-icons/fa'
 import { RiReactjsLine } from 'react-icons/ri'
 import { HiMail } from 'react-icons/hi'
-import { Github, ExternalLink, FileText } from "lucide-react"
+import { Github, ExternalLink, FileText, Sparkles, Code2, Rocket, Star, Mail, Linkedin } from "lucide-react"
 import { ChevronRight } from "lucide-react"
 
 const socialLinks = [
@@ -176,93 +176,157 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
   }, [typedName])
 
   return (
-    <>
-      <motion.section
-        className="mb-12 flex items-start gap-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Image
-            alt="Profile"
-            className="rounded-full object-cover"
-            height={160}
-            width={160}
-            src="https://avatars.githubusercontent.com/u/583231?v=4"
-            priority
-          />
-        </motion.div>
-        <div className="flex-1">
-          <motion.h1
-            className="text-3xl font-bold mb-2"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            {typedName}
-          </motion.h1>
-          <motion.p
-            className="text-xl text-muted-foreground mb-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            Full Stack Developer | AI Enthusiast | Blockchain Explorer
-          </motion.p>
-          <motion.p
-            className="text-muted-foreground mb-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            With over 5 years of experience in full-stack development, I specialize in creating innovative solutions that leverage cutting-edge technologies.
-          </motion.p>
-          <motion.div
-            className="flex space-x-4"
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-          >
-            {socialLinks.map((link, index) => (
-              <motion.div
-                key={link.label}
-                variants={{
-                  initial: { opacity: 0, y: 20 },
-                  animate: { opacity: 1, y: 0 }
-                }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link href={link.href}>
-                  <Button variant="outline" size="icon">
-                    <link.icon className="h-4 w-4" />
-                    <span className="sr-only">{link.label}</span>
-                  </Button>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </motion.section>
+    <div className="min-h-screen bg-background">
+      <main className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* 动态背景 */}
+        <div className="fixed inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
 
-      {currentExperience && (
+        {/* 个人信息部分 */}
         <motion.section
-          className="mb-16 pt-8"
+          className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.6 }}
         >
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <span className="h-1.5 w-4 bg-primary rounded-full"></span>
-            Current Role
-          </h2>
-          <Card className="overflow-hidden hover:shadow-lg transition-all duration-300">
-            <div className="p-6">
+          <div className="flex flex-col md:flex-row items-start gap-8">
+            {/* 头像 */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="relative w-40 h-40 rounded-2xl overflow-hidden">
+                <Image
+                  alt="Profile"
+                  className="object-cover"
+                  fill
+                  priority
+                  src="https://picsum.photos/400/400?random=1"
+                />
+              </div>
+              <motion.div
+                className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-2 rounded-full"
+                initial={{ rotate: -20, scale: 0.8 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <Code2 className="h-5 w-5" />
+              </motion.div>
+            </motion.div>
+
+            {/* 个人介绍 */}
+            <div className="flex-1 space-y-4">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
+                  Full Stack Developer
+                </h1>
+                <div className="flex items-center gap-2 mt-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <p className="text-xl text-muted-foreground italic">
+                    Crafting Digital Experiences
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.p
+                className="text-muted-foreground leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                Passionate about building modern web applications with cutting-edge technologies.
+                Focused on creating seamless user experiences and scalable solutions.
+              </motion.p>
+
+              <motion.div
+                className="flex flex-wrap gap-2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                {['TypeScript', 'React', 'Node.js', 'Next.js', 'AWS'].map((skill) => (
+                  <Badge key={skill} variant="secondary" className="px-3 py-1">
+                    {skill}
+                  </Badge>
+                ))}
+              </motion.div>
+
+              <motion.div
+                className="flex flex-wrap gap-4 pt-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  asChild
+                >
+                  <a
+                    href="mailto:your.email@example.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Mail className="h-4 w-4" />
+                    <span className="hidden sm:inline">Email</span>
+                  </a>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  asChild
+                >
+                  <a
+                    href="https://linkedin.com/in/your-profile"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Linkedin className="h-4 w-4" />
+                    <span className="hidden sm:inline">LinkedIn</span>
+                  </a>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  asChild
+                >
+                  <a
+                    href="https://github.com/your-username"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Github className="h-4 w-4" />
+                    <span className="hidden sm:inline">GitHub</span>
+                  </a>
+                </Button>
+              </motion.div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* 当前工作部分 */}
+        {currentExperience && (
+          <motion.section
+            className="mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <Star className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-bold">Current Role</h2>
+            </div>
+            <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-background to-muted/50">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div>
                   <h3 className="text-xl font-bold text-primary">{currentExperience.position}</h3>
@@ -308,144 +372,161 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
                   </Link>
                 </Button>
               </div>
-            </div>
-          </Card>
-        </motion.section>
-      )}
+            </Card>
+          </motion.section>
+        )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16 pt-8">
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              <span className="h-1.5 w-4 bg-primary rounded-full"></span>
-              Recent Projects
-            </h2>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/projects" className="flex items-center gap-2">
-                View All
-                <ChevronRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="space-y-4">
-            {recentProjects.map((project) => (
-              <motion.div
-                key={project._id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -3 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Card className="overflow-hidden">
-                  <div className="relative aspect-video">
-                    <Image
-                      src={project.coverImage?.asset?.url || `https://picsum.photos/seed/${project._id}/800/600`}
-                      alt={project.coverImage?.alt || project.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                      <div className="absolute inset-0 p-4">
-                        <h3 className="text-lg font-bold text-white mb-2">{project.title}</h3>
-                        <p className="text-sm text-gray-200 line-clamp-3">{project.description}</p>
-                        <div className="absolute bottom-4 left-4 flex gap-2">
-                          {project.githubUrl && (
-                            <Button size="sm" variant="secondary" asChild>
-                              <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                                <Github className="h-4 w-4 mr-1" />
-                                Code
-                              </a>
-                            </Button>
-                          )}
-                          {project.projectUrl && (
-                            <Button size="sm" variant="secondary" asChild>
-                              <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
-                                <FileText className="h-4 w-4 mr-1" />
-                                Doc
-                              </a>
-                            </Button>
-                          )}
+        {/* 最近项目和技术栈部分 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+          {/* Recent Projects Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.7 }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Rocket className="h-6 w-6 text-primary" />
+                <h2 className="text-2xl font-bold">Recent Projects</h2>
+              </div>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/projects" className="flex items-center gap-2">
+                  View All
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+            <div className="space-y-4">
+              {recentProjects.map((project) => (
+                <motion.div
+                  key={project._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  whileHover={{ y: -3 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Card className="overflow-hidden">
+                    <div className="relative aspect-video">
+                      <Image
+                        src={project.coverImage?.asset?.url || `https://picsum.photos/seed/${project._id}/800/600`}
+                        alt={project.coverImage?.alt || project.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute inset-0 p-4">
+                          <h3 className="text-lg font-bold text-white mb-2">{project.title}</h3>
+                          <p className="text-sm text-gray-200 line-clamp-3">{project.description}</p>
+                          <div className="absolute bottom-4 left-4 flex gap-2">
+                            {project.githubUrl && (
+                              <Button size="sm" variant="secondary" asChild>
+                                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                                  <Github className="h-4 w-4 mr-1" />
+                                  Code
+                                </a>
+                              </Button>
+                            )}
+                            {project.projectUrl && (
+                              <Button size="sm" variant="secondary" asChild>
+                                <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
+                                  <FileText className="h-4 w-4 mr-1" />
+                                  Doc
+                                </a>
+                              </Button>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="p-3">
-                    <div className="flex flex-wrap gap-1">
-                      {project.tags?.map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="text-xs px-2 py-0.5"
-                        >
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <span className="h-1.5 w-4 bg-primary rounded-full"></span>
-            Technical Arsenal
-          </h2>
-          <div className="grid grid-cols-1 gap-3">
-            {Object.entries(skills.sections).map(([key, section]) => (
-              <motion.div
-                key={key}
-                className="group"
-                whileHover={{ scale: 1.01 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Card className="hover:shadow-md transition-all duration-300">
-                  <div className="p-3">
-                    <h3 className="text-base font-semibold mb-1.5 flex items-center gap-2">
-                      <span className="h-1 w-3 bg-primary/60 rounded-full"></span>
-                      {section.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mb-2">
-                      {section.description}
-                    </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-                      {section.items.map((skill) => (
-                        <div
-                          key={skill.name}
-                          className="flex items-center gap-1.5 p-1 rounded-md hover:bg-accent/50 transition-colors duration-300"
-                        >
-                          <div
-                            className="p-1 rounded-md"
-                            style={{ backgroundColor: `${skill.color}15` }}
+                    <div className="p-3">
+                      <div className="flex flex-wrap gap-1">
+                        {project.tags?.map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="secondary"
+                            className="text-xs px-2 py-0.5"
                           >
-                            <skill.icon
-                              className="h-3.5 w-3.5"
-                              style={{ color: skill.color }}
-                            />
-                          </div>
-                          <span className="text-xs text-muted-foreground">
-                            {skill.name}
-                          </span>
-                        </div>
-                      ))}
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+
+          {/* Technical Arsenal Section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <Code2 className="h-6 w-6 text-primary" />
+              <h2 className="text-2xl font-bold">Technical Arsenal</h2>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              {Object.entries(skills.sections).map(([key, section]) => (
+                <motion.div
+                  key={key}
+                  className="group"
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Card className="hover:shadow-md transition-all duration-300">
+                    <div className="p-3">
+                      <h3 className="text-base font-semibold mb-1.5 flex items-center gap-2">
+                        <span className="h-1 w-3 bg-primary/60 rounded-full"></span>
+                        {section.title}
+                      </h3>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        {section.description}
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                        {section.items.map((skill) => (
+                          <div
+                            key={skill.name}
+                            className="flex items-center gap-1.5 p-1 rounded-md hover:bg-accent/50 transition-colors duration-300"
+                          >
+                            <div
+                              className="p-1 rounded-md"
+                              style={{ backgroundColor: `${skill.color}15` }}
+                            >
+                              <skill.icon
+                                className="h-3.5 w-3.5"
+                                style={{ color: skill.color }}
+                              />
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {skill.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        </div>
+
+        {/* 底部装饰 */}
+        <motion.div
+          className="text-center text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.9 }}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <div className="h-[1px] w-12 bg-border" />
+            <span className="text-sm">Building the future, one line at a time</span>
+            <div className="h-[1px] w-12 bg-border" />
           </div>
-        </motion.section>
-      </div>
-    </>
+        </motion.div>
+      </main>
+    </div>
   )
 }

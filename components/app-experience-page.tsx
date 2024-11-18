@@ -4,25 +4,27 @@ import { motion } from "framer-motion"
 import { ExperienceTimeline } from "@/components/experience-timeline"
 import { Briefcase, Star, History, Sparkles } from "lucide-react"
 
+interface Project {
+  name: string
+  description: string
+  background?: {
+    problem: string
+    solution: string
+    impact: string
+  }
+  responsibilities: string[]
+  techStack: string[]
+}
+
 interface Experience {
   _id: string
   company: string
   position: string
   startDate: string
-  endDate?: string
+  endDate: string | null
   isCurrentRole: boolean
   description: string
-  projects: Array<{
-    name: string
-    description: string
-    background?: {
-      problem: string
-      solution: string
-      impact: string
-    }
-    responsibilities: string[]
-    techStack: string[]
-  }>
+  projects: Project[]
   skills: string[]
   achievements: string[]
   order: number
