@@ -145,7 +145,7 @@ const CommentCard = memo(({
     currentUserId
 }: {
     comment: any
-    onReply: (id: string) => void
+    onReply: (id: string, content: string) => void
     onLike: (id: string) => void
     currentUserId?: string
 }) => {
@@ -158,19 +158,15 @@ const CommentCard = memo(({
     const handleReplyClick = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
-        // 保存当前滚动位置
-        const currentScroll = window.scrollY;
+        setShowRepliesDialog(true);
+    };
 
-        if (repliesCount > 0) {
-            setShowRepliesDialog(true);
-        } else {
-            onReply(comment.id);
+    const handleSubmitReply = () => {
+        if (replyContent.trim()) {
+            onReply(comment.id, replyContent);
+            setShowRepliesDialog(false);
+            setReplyContent("");
         }
-
-        // 在下一个事件循环中恢复滚动位置
-        requestAnimationFrame(() => {
-            window.scrollTo(0, currentScroll);
-        });
     };
 
     return (
@@ -273,13 +269,10 @@ const CommentCard = memo(({
             <Dialog
                 open={showRepliesDialog}
                 onOpenChange={(open) => {
-                    // 保存当前滚动位置
-                    const currentScroll = window.scrollY;
                     setShowRepliesDialog(open);
-                    // 在下一个事件循环中恢复滚动位置
-                    requestAnimationFrame(() => {
-                        window.scrollTo(0, currentScroll);
-                    });
+                    if (!open) {
+                        setReplyContent("");
+                    }
                 }}
             >
                 <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
@@ -350,13 +343,7 @@ const CommentCard = memo(({
                                 Cancel
                             </Button>
                             <Button
-                                onClick={() => {
-                                    if (replyContent.trim()) {
-                                        onReply(comment.id);
-                                        setShowRepliesDialog(false);
-                                        setReplyContent("");
-                                    }
-                                }}
+                                onClick={handleSubmitReply}
                                 disabled={!replyContent.trim()}
                             >
                                 Reply
@@ -374,7 +361,7 @@ CommentCard.displayName = 'CommentCard'
 const CommentList = memo(({ comments, user, onReply, onLike }: {
     comments: any[]
     user: any
-    onReply: (id: string) => void
+    onReply: (id: string, content: string) => void
     onLike: (id: string) => void
 }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -575,8 +562,6 @@ const DiscussionSection = () => {
     } = useComments([])
 
     const [newComment, setNewComment] = useState("")
-    const [replyContent, setReplyContent] = useState("")
-    const [replyingTo, setReplyingTo] = useState<string | null>(null)
     const [commentTags, setCommentTags] = useState<string[]>([])
     const [syncError, setSyncError] = useState(false)
 
@@ -647,47 +632,10 @@ const DiscussionSection = () => {
         }
     }
 
-    const handleSubmitReply = async (commentId: string, content: string) => {
-        if (!content.trim() || !user) return;
-        try {
-            await addReply(commentId, content);
-            setReplyingTo(null);
-            await fetchComments();
-        } catch (error) {
-            console.error('Error submitting reply:', error);
-        }
-    };
-
-    const handleLike = async (commentId: string) => {
-        if (!user) return;
-
-        // 乐观更新UI
-        setComments(prevComments => prevComments.map(comment => {
-            if (comment.id === commentId) {
-                const isLiked = comment.likes?.some((like: any) => like.user?.id === user.id);
-                return {
-                    ...comment,
-                    likes: isLiked
-                        ? comment.likes.filter((like: any) => like.user?.id !== user.id)
-                        : [...(comment.likes || []), { user: { id: user.id } }]
-                };
-            }
-            return comment;
-        }));
-
-        try {
-            await toggleLike(commentId);
-        } catch (error) {
-            console.error('Error liking comment:', error);
-            // 如果失败，恢复数据
-            await fetchComments();
-            toast.error("Failed to update like. Please try again.");
-        }
-    };
-
     const handleReply = async (commentId: string, content: string) => {
         if (!content.trim() || !user) return;
 
+        // 乐观更新
         setComments(prevComments => prevComments.map(comment => {
             if (comment.id === commentId) {
                 return {
@@ -716,11 +664,30 @@ const DiscussionSection = () => {
         }
     };
 
-    const handleReplyLike = async (replyId: string) => {
+    const handleLike = async (commentId: string) => {
+        if (!user) return;
+
+        // 乐观更新UI
+        setComments(prevComments => prevComments.map(comment => {
+            if (comment.id === commentId) {
+                const isLiked = comment.likes?.some((like: any) => like.user?.id === user.id);
+                return {
+                    ...comment,
+                    likes: isLiked
+                        ? comment.likes.filter((like: any) => like.user?.id !== user.id)
+                        : [...(comment.likes || []), { user: { id: user.id } }]
+                };
+            }
+            return comment;
+        }));
+
         try {
-            await toggleReplyLike(replyId);
+            await toggleLike(commentId);
         } catch (error) {
-            console.error('Error liking reply:', error);
+            console.error('Error liking comment:', error);
+            // 如果失败，恢复数据
+            await fetchComments();
+            toast.error("Failed to update like. Please try again.");
         }
     };
 
@@ -823,7 +790,7 @@ const DiscussionSection = () => {
                 <CommentList
                     comments={comments}
                     user={user}
-                    onReply={setReplyingTo}
+                    onReply={handleReply}
                     onLike={handleLike}
                 />
             ) : (
@@ -839,60 +806,6 @@ const DiscussionSection = () => {
                     </p>
                 </motion.div>
             )}
-
-            {/* 回复对话框 */}
-            <Dialog
-                open={!!replyingTo}
-                onOpenChange={(open) => {
-                    if (!open) {
-                        setReplyingTo(null);
-                        setReplyContent("");
-                    }
-                }}
-            >
-                <DialogContent className="sm:max-w-[500px]">
-                    <DialogHeader>
-                        <DialogTitle>Reply to discussion</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                        {replyingTo && (
-                            <div className="p-4 rounded-lg bg-muted/50">
-                                <p className="text-sm text-muted-foreground">
-                                    {comments.find(c => c.id === replyingTo)?.content}
-                                </p>
-                            </div>
-                        )}
-                        <Textarea
-                            value={replyContent}
-                            onChange={(e) => setReplyContent(e.target.value)}
-                            placeholder="Write your reply..."
-                            className="min-h-[100px]"
-                        />
-                        <div className="flex justify-end gap-2">
-                            <Button
-                                variant="outline"
-                                onClick={() => {
-                                    setReplyingTo(null);
-                                    setReplyContent("");
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    if (replyingTo && replyContent.trim()) {
-                                        handleSubmitReply(replyingTo, replyContent);
-                                        setReplyContent("");
-                                    }
-                                }}
-                                disabled={!replyContent.trim()}
-                            >
-                                Reply
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 };
