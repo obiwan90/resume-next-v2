@@ -55,17 +55,22 @@ export const commentService = {
             include: {
                 user: true,
                 tags: true,
-                likes: true,
-                replies: {
+                likes: {
                     include: {
                         user: true
+                    }
+                },
+                replies: {
+                    include: {
+                        user: true,
+                        likes: true
                     }
                 }
             },
             orderBy: {
                 createdAt: 'desc'
             }
-        })
+        });
     },
 
     // 添加回复
@@ -127,6 +132,42 @@ export const commentService = {
             data: {
                 userId: user.id,  // 使用数据库中的用户ID
                 commentId
+            }
+        });
+    },
+
+    // 添加回复点赞方法
+    async toggleReplyLike(clerkUserId: string, replyId: string) {
+        // 首先获取数据库中的用户
+        const user = await prisma.user.findUnique({
+            where: { clerkId: clerkUserId }
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const existingLike = await prisma.like.findUnique({
+            where: {
+                userId_replyId: {
+                    userId: user.id,
+                    replyId
+                }
+            }
+        });
+
+        if (existingLike) {
+            return prisma.like.delete({
+                where: {
+                    id: existingLike.id
+                }
+            });
+        }
+
+        return prisma.like.create({
+            data: {
+                userId: user.id,
+                replyId
             }
         });
     }

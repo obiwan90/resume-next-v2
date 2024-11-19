@@ -15,9 +15,10 @@ export function useComments() {
                 : '';
             const response = await fetch(`/api/comments${queryParams}`);
             const data = await response.json();
-            setComments(data);
+            setComments(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error('Error fetching comments:', error);
+            setComments([]);
         } finally {
             setLoading(false);
         }

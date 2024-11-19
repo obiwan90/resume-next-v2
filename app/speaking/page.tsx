@@ -2,7 +2,7 @@
 
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { useState, useCallback, memo, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -13,21 +13,21 @@ import {
     MessageCircle,
     Heart,
     Send,
-    Clock,
     Code2,
     Hash,
     Sparkles,
-    Loader2
+    Loader2,
+    Filter,
+    Tag as TagIcon
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { prisma } from "@/lib/prisma"
 
 // 预定义的标签
 const predefinedTags = [
-    { id: 'tech', label: 'Technology', icon: <Code2 className="h-4 w-4" /> },
-    { id: 'career', label: 'Career', icon: <Sparkles className="h-4 w-4" /> },
-    { id: 'question', label: 'Question', icon: <MessageCircle className="h-4 w-4" /> },
-    { id: 'other', label: 'Other', icon: <Hash className="h-4 w-4" /> }
+    { id: 'tech', label: 'Technology', icon: <Code2 className="h-4 w-4" />, color: 'text-blue-500' },
+    { id: 'career', label: 'Career', icon: <Sparkles className="h-4 w-4" />, color: 'text-purple-500' },
+    { id: 'question', label: 'Question', icon: <MessageCircle className="h-4 w-4" />, color: 'text-green-500' },
+    { id: 'other', label: 'Other', icon: <Hash className="h-4 w-4" />, color: 'text-orange-500' }
 ]
 
 // 添加日期格式化工具函数
@@ -315,6 +315,26 @@ const DiscussionSection = () => {
                         onChange={(e) => setNewComment(e.target.value)}
                         className="min-h-[120px]"
                     />
+                    <div className="flex flex-wrap gap-2">
+                        {predefinedTags.map(tag => (
+                            <Button
+                                key={tag.id}
+                                variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => {
+                                    setSelectedTags(prev =>
+                                        prev.includes(tag.id)
+                                            ? prev.filter(t => t !== tag.id)
+                                            : [...prev, tag.id]
+                                    )
+                                }}
+                                className="gap-2"
+                            >
+                                {tag.icon}
+                                {tag.label}
+                            </Button>
+                        ))}
+                    </div>
                     <div className="flex justify-end">
                         <Button onClick={handleSubmitComment}>
                             <Send className="h-4 w-4 mr-2" />
@@ -326,7 +346,7 @@ const DiscussionSection = () => {
 
             {/* 评论列表 */}
             <div className="space-y-4">
-                {comments.map((comment: any) => (
+                {Array.isArray(comments) && comments.map((comment: any) => (
                     <div key={comment.id}>
                         <CommentCard
                             comment={comment}
@@ -351,12 +371,29 @@ const DiscussionSection = () => {
                                                 <AvatarImage src={reply.user.avatarUrl} />
                                                 <AvatarFallback>{reply.user.name[0]}</AvatarFallback>
                                             </Avatar>
-                                            <div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className="font-semibold">{reply.user.name}</span>
-                                                    <span className="text-sm text-muted-foreground">
-                                                        {formatDate(reply.createdAt)}
-                                                    </span>
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between mb-1">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-semibold">{reply.user.name}</span>
+                                                        <span className="text-sm text-muted-foreground">
+                                                            {formatDate(reply.createdAt)}
+                                                        </span>
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleReplyLike(reply.id)}
+                                                        className={cn(
+                                                            "gap-2",
+                                                            reply.likes.some((like: any) => like.userId === user?.id) && "text-primary"
+                                                        )}
+                                                    >
+                                                        <Heart className={cn(
+                                                            "h-4 w-4",
+                                                            reply.likes.some((like: any) => like.userId === user?.id) && "fill-current"
+                                                        )} />
+                                                        <span>{reply.likes.length}</span>
+                                                    </Button>
                                                 </div>
                                                 <p className="text-sm">{reply.content}</p>
                                             </div>
@@ -367,6 +404,11 @@ const DiscussionSection = () => {
                         )}
                     </div>
                 ))}
+                {!Array.isArray(comments) && (
+                    <div className="text-center text-muted-foreground">
+                        No comments yet
+                    </div>
+                )}
             </div>
         </div>
     )
@@ -376,6 +418,17 @@ const DiscussionSection = () => {
 export default function SpeakingPage() {
     return (
         <div className="container mx-auto px-4 py-8">
+            {/* 页面标题 */}
+            <div className="mb-8 text-center">
+                <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    Join the Discussion
+                </h1>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                    Share your thoughts, ask questions, and connect with others in the community.
+                    All discussions are welcome, from technical topics to career advice.
+                </p>
+            </div>
+
             <SignedIn>
                 <DiscussionSection />
             </SignedIn>
@@ -385,19 +438,48 @@ export default function SpeakingPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="flex flex-col items-center justify-center min-h-[60vh] text-center"
+                    className="flex flex-col items-center justify-center min-h-[40vh] text-center"
                 >
-                    <h2 className="text-2xl font-semibold mb-4">Join the Discussion</h2>
-                    <p className="text-muted-foreground mb-8 max-w-md">
-                        Sign in to share your thoughts and join the conversation.
-                    </p>
-                    <SignInButton mode="modal" afterSignInUrl="/speaking">
-                        <Button size="lg">
-                            Sign in to Comment
-                        </Button>
-                    </SignInButton>
+                    <div className="mb-8 space-y-4">
+                        <div className="flex flex-wrap gap-4 justify-center">
+                            {predefinedTags.map(tag => (
+                                <Card key={tag.id} className="p-4 flex items-center gap-3 w-[200px]">
+                                    <div className={cn("p-2 rounded-lg bg-muted", tag.color)}>
+                                        {tag.icon}
+                                    </div>
+                                    <div className="text-left">
+                                        <h3 className="font-medium">{tag.label}</h3>
+                                        <p className="text-sm text-muted-foreground">
+                                            Discuss {tag.label.toLowerCase()} topics
+                                        </p>
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </div>
+
+                    <Card className="p-6 max-w-md w-full bg-gradient-to-b from-background to-muted/50">
+                        <h2 className="text-2xl font-semibold mb-4">Start Participating</h2>
+                        <p className="text-muted-foreground mb-6">
+                            Sign in to join the conversation and share your insights with the community.
+                        </p>
+                        <SignInButton mode="modal" redirectUrl="/speaking">
+                            <Button size="lg" className="w-full gap-2">
+                                <MessageCircle className="h-5 w-5" />
+                                Sign in to Comment
+                            </Button>
+                        </SignInButton>
+                    </Card>
                 </motion.div>
             </SignedOut>
+
+            {/* 页面底部 */}
+            <div className="mt-16 text-center text-sm text-muted-foreground">
+                <p>
+                    Please keep discussions respectful and constructive.
+                    See our community guidelines for more information.
+                </p>
+            </div>
         </div>
     )
 } 

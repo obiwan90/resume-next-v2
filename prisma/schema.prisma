@@ -8,26 +8,18 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// 保留原有的 Message 表
-model Message {
-  id        String   @id @default(uuid())
-  content   String
-  createdAt DateTime @default(now())
-  // 添加其他原有字段...
-}
-
 // 用户模型
 model User {
   id            String    @id @default(uuid())
-  clerkId       String    @unique // Clerk 用户 ID
+  clerkId       String    @unique
   name          String
   email         String    @unique
   avatarUrl     String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  comments      Comment[] // 用户的评论
-  likes         Like[]    // 用户的点赞
-  replies       Reply[]   // 用户的回复
+  comments      Comment[]
+  likes         Like[]
+  replies       Reply[]
 }
 
 // 评论模型
@@ -38,9 +30,9 @@ model Comment {
   updatedAt DateTime  @updatedAt
   userId    String
   user      User      @relation(fields: [userId], references: [id])
-  tags      Tag[]     // 评论的标签
-  likes     Like[]    // 评论的点赞
-  replies   Reply[]   // 评论的回复
+  tags      Tag[]
+  likes     Like[]
+  replies   Reply[]
 }
 
 // 标签模型
@@ -54,12 +46,15 @@ model Tag {
 model Like {
   id        String   @id @default(uuid())
   userId    String
-  commentId String
+  commentId String?
+  replyId   String?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
-  comment   Comment  @relation(fields: [commentId], references: [id])
+  comment   Comment? @relation(fields: [commentId], references: [id])
+  reply     Reply?   @relation(fields: [replyId], references: [id])
 
   @@unique([userId, commentId])
+  @@unique([userId, replyId])
 }
 
 // 回复模型
@@ -72,4 +67,5 @@ model Reply {
   commentId String
   user      User     @relation(fields: [userId], references: [id])
   comment   Comment  @relation(fields: [commentId], references: [id])
+  likes     Like[]
 } 
