@@ -14,6 +14,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
+import { UserButton, SignedIn } from "@clerk/nextjs";
 
 const navItems = [
     { name: "Home", href: "/" },
@@ -119,9 +120,19 @@ export function Navbar() {
                     ))}
                 </nav>
 
-                {/* 右侧：主题切换按钮 */}
-                <div className="flex items-center">
+                {/* 右侧：主题切换按钮和用户按钮 */}
+                <div className="flex items-center gap-4">
                     <ThemeToggle />
+                    <SignedIn>
+                        <UserButton
+                            afterSignOutUrl="/speaking"
+                            appearance={{
+                                elements: {
+                                    avatarBox: "w-8 h-8",
+                                }
+                            }}
+                        />
+                    </SignedIn>
                 </div>
             </div>
         </header>

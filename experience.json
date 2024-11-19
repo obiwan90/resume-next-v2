@@ -317,7 +317,7 @@
         {
             "_id": "software-dev-001",
             "company": "Software Company",
-            "position": "Software Developer",
+            "position": "independent developer",
             "startDate": "2021-07-01",
             "endDate": "Present",
             "description": "Full stack development engineer, responsible for architecture design and development of multiple projects",
