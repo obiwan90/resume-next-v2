@@ -3,7 +3,7 @@
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { useState, useCallback, memo, useEffect } from "react"
+import { useState, useCallback, memo, useEffect, Suspense } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
@@ -29,6 +29,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { getComments } from "@/lib/services/comment-service"
 
 // 预定义的标签
 const predefinedTags = [
@@ -229,6 +230,7 @@ const CommentInput = ({
     onTagSelect: (tagId: string) => void
 }) => {
     const { user } = useUser();
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     const handleEmojiSelect = (emoji: any) => {
         onChange(value + emoji.native);
@@ -257,28 +259,34 @@ const CommentInput = ({
                         className="min-h-[120px] resize-none focus:ring-2 ring-primary pr-12"
                         disabled={disabled}
                     />
-                    <Popover>
+                    <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
                         <PopoverTrigger asChild>
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 className="absolute bottom-2 right-2 text-muted-foreground hover:text-primary"
+                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                             >
                                 <Smile className="h-5 w-5" />
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent
-                            className="w-auto p-0"
-                            side="top"
-                            align="end"
-                        >
-                            <Picker
-                                data={data}
-                                onEmojiSelect={handleEmojiSelect}
-                                theme="light"
-                                previewPosition="none"
-                            />
-                        </PopoverContent>
+                        {showEmojiPicker && (
+                            <PopoverContent
+                                className="w-auto p-0"
+                                side="top"
+                                align="end"
+                            >
+                                <Picker
+                                    data={data}
+                                    onEmojiSelect={(emoji: any) => {
+                                        handleEmojiSelect(emoji);
+                                        setShowEmojiPicker(false);
+                                    }}
+                                    theme="light"
+                                    previewPosition="none"
+                                />
+                            </PopoverContent>
+                        )}
                     </Popover>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -311,8 +319,7 @@ const CommentInput = ({
 };
 
 // DiscussionSection 组件
-const DiscussionSection = () => {
-    const { user } = useUser();
+const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
     const {
         comments,
         loading,
@@ -322,12 +329,18 @@ const DiscussionSection = () => {
         addReply,
         toggleLike,
         toggleReplyLike,
+        setComments,
         fetchComments
-    } = useComments()
+    } = useComments(initialComments)  // 传入初始数据
 
     const [newComment, setNewComment] = useState("")
     const [replyingTo, setReplyingTo] = useState<string | null>(null)
     const [replyContent, setReplyContent] = useState("")
+
+    // 初始加载评论
+    useEffect(() => {
+        fetchComments();
+    }, [fetchComments]);
 
     // 用户登录后同步用户信息到数据库
     useEffect(() => {
@@ -559,8 +572,22 @@ const DiscussionSection = () => {
     )
 }
 
+// 获取初始数据
+async function getInitialComments() {
+    try {
+        const comments = await getComments()
+        return comments
+    } catch (error) {
+        console.error('Error fetching initial comments:', error)
+        return []
+    }
+}
+
 // 主页面组件
-export default function SpeakingPage() {
+export default async function SpeakingPage() {
+    // 获取初始数据
+    const initialComments = await getInitialComments()
+
     return (
         <div className="container mx-auto px-4 py-8">
             {/* 页面标题 */}
@@ -575,7 +602,14 @@ export default function SpeakingPage() {
             </div>
 
             <SignedIn>
-                <DiscussionSection />
+                <Suspense fallback={
+                    <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-muted-foreground">Loading discussions...</p>
+                    </div>
+                }>
+                    <DiscussionSection initialComments={initialComments} />
+                </Suspense>
             </SignedIn>
 
             <SignedOut>

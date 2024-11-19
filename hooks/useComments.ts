@@ -1,11 +1,17 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 
-export function useComments() {
+export function useComments(initialComments: any[] = []) {
     const { user } = useUser();
-    const [comments, setComments] = useState<any[]>([]);
+    const [comments, setComments] = useState<any[]>(initialComments);
     const [loading, setLoading] = useState(false);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (selectedTags.length > 0) {
+            fetchComments();
+        }
+    }, [selectedTags]);
 
     const fetchComments = useCallback(async () => {
         setLoading(true);
@@ -183,6 +189,7 @@ export function useComments() {
         addReply,
         toggleLike,
         toggleReplyLike,
+        setComments,
         fetchComments
     };
 } 

@@ -64,6 +64,9 @@ export const commentService = {
                     include: {
                         user: true,
                         likes: true
+                    },
+                    orderBy: {
+                        createdAt: 'asc'
                     }
                 }
             },
