@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/logo.png" alt="Logo" width="200" height="200"/>
+  <img src="https://cdn3.iconfinder.com/data/icons/logos-and-brands-adobe/512/288_Next.Js-512.png" alt="Logo" width="120" height="120"/>
 
   # 🌟 Modern Resume Website
 
@@ -20,7 +20,7 @@
   </h3>
 
   <div align="center">
-    <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/preview.gif" alt="项目预览" width="80%"/>
+    <img src="https://cdn.dribbble.com/users/2376408/screenshots/15700398/media/f6fe68be9d7f5e1bce44a4b7a7c9c27f.gif" alt="项目预览" width="80%"/>
   </div>
 </div>
 
@@ -48,7 +48,7 @@
 ## ✨ 特点亮点
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/features.png" alt="特点预览" width="100%"/>
+  <img src="https://cdn.dribbble.com/users/1626229/screenshots/14111272/media/e21f6a329c768396778c31bc19a89446.jpg" alt="特点预览" width="100%"/>
 </div>
 
 <table>
@@ -56,7 +56,7 @@
     <td width="50%">
       <h3 align="center">🎨 现代化设计</h3>
       <div align="center">
-        <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/design.gif" width="100%"/>
+        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/4c6a0e6b893b4f8d5cd23ee05bdd2b60.gif" width="100%"/>
       </div>
       <ul>
         <li>亮色/暗色主题切换</li>
@@ -68,7 +68,7 @@
     <td width="50%">
       <h3 align="center">💼 内容展示</h3>
       <div align="center">
-        <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/content.gif" width="100%"/>
+        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/51e8b56c70bc831faa0b6668c2c88590.gif" width="100%"/>
       </div>
       <ul>
         <li>个人信息展示</li>
@@ -82,7 +82,7 @@
     <td width="50%">
       <h3 align="center">🛠 技术特性</h3>
       <div align="center">
-        <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/tech.gif" width="100%"/>
+        <img src="https://cdn.dribbble.com/users/1626229/screenshots/14111272/media/856f57095e20bb6cd3af1145a85f7a00.gif" width="100%"/>
       </div>
       <ul>
         <li>App Router 路由系统</li>
@@ -94,7 +94,7 @@
     <td width="50%">
       <h3 align="center">🌍 全球化</h3>
       <div align="center">
-        <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/global.gif" width="100%"/>
+        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/b06e21e9d140cd6873ba7e2e382394bd.gif" width="100%"/>
       </div>
       <ul>
         <li>多语言支持</li>
@@ -147,10 +147,8 @@
 ## 📦 项目结构
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/structure.png" alt="项目结构" width="80%"/>
+  <img src="https://raw.githubusercontent.com/goldbergyoni/nodebestpractices/master/assets/images/projectstructre-2.png" alt="项目结构" width="80%"/>
 </div>
-
-[其余内容保持不变，但建议也添加相应的图片和图标来增强视觉效果...]
 
 ## 📱 响应式设计
 
@@ -158,25 +156,23 @@
   <table>
     <tr>
       <td align="center">
-        <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/mobile.png" alt="Mobile View" width="200"/>
+        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/e3d03a7c2eb9b42e47007f856e20b405.jpg" alt="Mobile View" width="200"/>
         <br />
         <b>移动端</b>
       </td>
       <td align="center">
-        <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/tablet.png" alt="Tablet View" width="300"/>
+        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/f6fe68be9d7f5e1bce44a4b7a7c9c27f.jpg" alt="Tablet View" width="300"/>
         <br />
         <b>平板端</b>
       </td>
       <td align="center">
-        <img src="https://raw.githubusercontent.com/your-username/resume-next-v1/main/public/desktop.png" alt="Desktop View" width="400"/>
+        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/51e8b56c70bc831faa0b6668c2c88590.jpg" alt="Desktop View" width="400"/>
         <br />
         <b>桌面端</b>
       </td>
     </tr>
   </table>
 </div>
-
-[后续内容类似处理，添加相应的图片和图标...]
 
 ## 📈 项目状态
 
