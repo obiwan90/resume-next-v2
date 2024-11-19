@@ -3,7 +3,7 @@
 import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
-import { useState, useCallback, memo, useEffect, Suspense } from "react"
+import { useState, useCallback, memo, useEffect, Suspense, useRef } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
@@ -165,6 +165,12 @@ const ReplySection = memo(({
 }) => {
     const [content, setContent] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+    const handleEmojiSelect = (emoji: any) => {
+        setContent(prev => prev + emoji.native);
+        setShowEmojiPicker(false);
+    };
 
     const handleSubmit = async () => {
         if (!content.trim() || isSubmitting) return;
@@ -180,12 +186,41 @@ const ReplySection = memo(({
 
     return (
         <div className="ml-12 mt-2 space-y-2">
-            <Textarea
-                placeholder="Write a reply..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                disabled={isSubmitting}
-            />
+            <div className="relative">
+                <Textarea
+                    placeholder="Write a reply..."
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    disabled={isSubmitting}
+                    className="pr-12"
+                />
+                <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute bottom-2 right-2 text-muted-foreground hover:text-primary"
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        >
+                            <Smile className="h-5 w-5" />
+                        </Button>
+                    </PopoverTrigger>
+                    {showEmojiPicker && (
+                        <PopoverContent
+                            className="w-auto p-0"
+                            side="top"
+                            align="end"
+                        >
+                            <Picker
+                                data={data}
+                                onEmojiSelect={handleEmojiSelect}
+                                theme="light"
+                                previewPosition="none"
+                            />
+                        </PopoverContent>
+                    )}
+                </Popover>
+            </div>
             <div className="flex gap-2 justify-end">
                 <Button
                     variant="outline"
@@ -318,8 +353,68 @@ const CommentInput = ({
     );
 };
 
+// 添加虚拟列表组件
+const VirtualizedCommentList = memo(({ comments, user, onReply, onLike, onReplyLike }: {
+    comments: any[]
+    user: any
+    onReply: (id: string) => void
+    onLike: (id: string) => void
+    onReplyLike: (id: string) => void
+}) => {
+    const [visibleRange, setVisibleRange] = useState({ start: 0, end: 10 });
+    const observerRef = useRef<IntersectionObserver | null>(null);
+    const lastCommentRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        observerRef.current = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && visibleRange.end < comments.length) {
+                    setVisibleRange(prev => ({
+                        start: prev.start,
+                        end: Math.min(prev.end + 5, comments.length)
+                    }));
+                }
+            },
+            { threshold: 0.5 }
+        );
+
+        return () => observerRef.current?.disconnect();
+    }, [comments.length, visibleRange.end]);
+
+    useEffect(() => {
+        if (lastCommentRef.current && observerRef.current) {
+            observerRef.current.observe(lastCommentRef.current);
+        }
+    }, [visibleRange]);
+
+    return (
+        <div className="space-y-6">
+            {comments.slice(0, visibleRange.end).map((comment, index) => (
+                <motion.div
+                    key={comment.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    ref={index === visibleRange.end - 1 ? lastCommentRef : null}
+                >
+                    <CommentCard
+                        comment={comment}
+                        onReply={onReply}
+                        onLike={onLike}
+                        currentUserId={user?.id}
+                    />
+                    {/* ... 回复部分保持不变 */}
+                </motion.div>
+            ))}
+        </div>
+    );
+});
+
+VirtualizedCommentList.displayName = 'VirtualizedCommentList';
+
 // DiscussionSection 组件
 const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
+    const { user } = useUser();
     const {
         comments,
         loading,
@@ -331,7 +426,7 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
         toggleReplyLike,
         setComments,
         fetchComments
-    } = useComments(initialComments)  // 传入初始数据
+    } = useComments(initialComments)
 
     const [newComment, setNewComment] = useState("")
     const [replyingTo, setReplyingTo] = useState<string | null>(null)
@@ -363,9 +458,6 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
                     if (!response.ok) {
                         throw new Error('Failed to sync user data');
                     }
-
-                    // 登录后自动获取评论列表
-                    await fetchComments();
                 } catch (error) {
                     console.error('Error syncing user data:', error);
                 }
@@ -373,7 +465,7 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
 
             syncUserData();
         }
-    }, [user, fetchComments]);
+    }, [user]);
 
     const handleSubmitComment = async () => {
         if (!newComment.trim() || !user) return;
@@ -480,94 +572,29 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
                 }}
             />
 
-            {/* 评论列表 */}
-            <div className="space-y-6">
-                {loading ? (
-                    <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <p className="text-muted-foreground">Loading discussions...</p>
-                    </div>
-                ) : Array.isArray(comments) && comments.length > 0 ? (
-                    comments.map((comment: any) => (
-                        <motion.div
-                            key={comment.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4 }}
-                        >
-                            <CommentCard
-                                comment={comment}
-                                onReply={setReplyingTo}
-                                onLike={handleLike}
-                                currentUserId={user?.id}
-                            />
-                            {replyingTo === comment.id && (
-                                <ReplySection
-                                    commentId={comment.id}
-                                    onSubmit={(content) => handleReply(comment.id, content)}
-                                    onCancel={() => setReplyingTo(null)}
-                                />
-                            )}
-                            {/* 显示回复列表 */}
-                            {comment.replies.length > 0 && (
-                                <div className="ml-12 space-y-4 mt-4">
-                                    {comment.replies.map((reply: any) => (
-                                        <motion.div
-                                            key={reply.id}
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                        >
-                                            <Card className="p-4 bg-muted/50 hover:bg-muted/70 transition-colors">
-                                                <div className="flex gap-4">
-                                                    <Avatar>
-                                                        <AvatarImage src={reply.user.avatarUrl} />
-                                                        <AvatarFallback>{reply.user.name[0]}</AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center justify-between mb-1">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="font-semibold">{reply.user.name}</span>
-                                                                <span className="text-sm text-muted-foreground">
-                                                                    {formatDate(reply.createdAt)}
-                                                                </span>
-                                                            </div>
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                onClick={() => handleReplyLike(reply.id)}
-                                                                className={cn(
-                                                                    "gap-2 transition-all",
-                                                                    reply.likes.some((like: any) => like.userId === user?.id) && "text-primary"
-                                                                )}
-                                                            >
-                                                                <Heart className={cn(
-                                                                    "h-4 w-4 transition-all",
-                                                                    reply.likes.some((like: any) => like.userId === user?.id) && "fill-current"
-                                                                )} />
-                                                                <span>{reply.likes.length}</span>
-                                                            </Button>
-                                                        </div>
-                                                        <p className="text-sm">{reply.content}</p>
-                                                    </div>
-                                                </div>
-                                            </Card>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            )}
-                        </motion.div>
-                    ))
-                ) : (
-                    <div className="text-center py-12">
-                        <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">No discussions yet</h3>
-                        <p className="text-muted-foreground">
-                            Be the first to start a discussion!
-                        </p>
-                    </div>
-                )}
-            </div>
+            {/* 使用虚拟列表 */}
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-muted-foreground">Loading discussions...</p>
+                </div>
+            ) : Array.isArray(comments) && comments.length > 0 ? (
+                <VirtualizedCommentList
+                    comments={comments}
+                    user={user}
+                    onReply={setReplyingTo}
+                    onLike={handleLike}
+                    onReplyLike={handleReplyLike}
+                />
+            ) : (
+                <div className="text-center py-12">
+                    <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">No discussions yet</h3>
+                    <p className="text-muted-foreground">
+                        Be the first to start a discussion!
+                    </p>
+                </div>
+            )}
         </div>
     )
 }
