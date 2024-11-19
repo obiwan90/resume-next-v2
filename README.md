@@ -1,191 +1,194 @@
-<div align="center">
-  <img src="https://cdn3.iconfinder.com/data/icons/logos-and-brands-adobe/512/288_Next.Js-512.png" alt="Logo" width="120" height="120"/>
+# Modern Resume Website
 
-  # 🌟 Modern Resume Website
+一个使用 Next.js 14 构建的现代化个人简历网站，集成了丰富的动画效果和响应式设计。
 
-  [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-  [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
-  
-  [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/resume-next-v1)
-  [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/your-username/resume-next-v1)
+## 🌟 项目特点
 
-  <h3>
-    一个使用 Next.js 14 构建的现代化个人简历网站，集成了丰富的动画效果和响应式设计
-    <br />
-    <a href="https://your-demo-link.com" target="_blank"><strong>在线演示</strong></a> · 
-    <a href="https://your-docs-link.com" target="_blank"><strong>详细文档</strong></a> · 
-    <a href="https://github.com/your-username/resume-next-v1/issues"><strong>报告问题</strong></a>
-  </h3>
+### 🎨 现代化设计
+- 支持亮色/暗色主题切换
+- 流畅的页面过渡动画
+- 精心设计的响应式布局
+- 优雅的交互反馈
+- 基于 Framer Motion 的动画系统
 
-  <div align="center">
-    <img src="https://cdn.dribbble.com/users/2376408/screenshots/15700398/media/f6fe68be9d7f5e1bce44a4b7a7c9c27f.gif" alt="项目预览" width="80%"/>
-  </div>
-</div>
+### 💼 内容展示
+- 个人信息展示
+- 专业技能矩阵
+- 项目经验时间线
+- 技术博客分享
+- 在线留言互动
+- 旅行地图可视化
 
----
-
-<details open>
-<summary><h2>📚 目录</h2></summary>
-
-- [✨ 特点亮点](#-特点亮点)
-- [🚀 技术栈](#-技术栈)
-- [📦 项目结构](#-项目结构)
-- [🎯 快速开始](#-快速开始)
-- [🔧 主要功能](#-主要功能)
-- [📱 响应式设计](#-响应式设计)
-- [🔒 安全特性](#-安全特性)
-- [🌐 部署指南](#-部署指南)
-- [💻 开发指南](#-开发指南)
-- [📄 许可证](#-许可证)
-- [🤝 贡献指南](#-贡献指南)
-- [📞 联系方式](#-联系方式)
-- [🙏 致谢](#-致谢)
-
-</details>
-
-## ✨ 特点亮点
-
-<div align="center">
-  <img src="https://cdn.dribbble.com/users/1626229/screenshots/14111272/media/e21f6a329c768396778c31bc19a89446.jpg" alt="特点预览" width="100%"/>
-</div>
-
-<table>
-  <tr>
-    <td width="50%">
-      <h3 align="center">🎨 现代化设计</h3>
-      <div align="center">
-        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/4c6a0e6b893b4f8d5cd23ee05bdd2b60.gif" width="100%"/>
-      </div>
-      <ul>
-        <li>亮色/暗色主题切换</li>
-        <li>流畅的页面过渡动画</li>
-        <li>精心设计的响应式布局</li>
-        <li>优雅的交互反馈</li>
-      </ul>
-    </td>
-    <td width="50%">
-      <h3 align="center">💼 内容展示</h3>
-      <div align="center">
-        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/51e8b56c70bc831faa0b6668c2c88590.gif" width="100%"/>
-      </div>
-      <ul>
-        <li>个人信息展示</li>
-        <li>专业技能矩阵</li>
-        <li>项目经验时间线</li>
-        <li>技术博客分享</li>
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3 align="center">🛠 技术特性</h3>
-      <div align="center">
-        <img src="https://cdn.dribbble.com/users/1626229/screenshots/14111272/media/856f57095e20bb6cd3af1145a85f7a00.gif" width="100%"/>
-      </div>
-      <ul>
-        <li>App Router 路由系统</li>
-        <li>服务端组件与流式渲染</li>
-        <li>响应式图片优化</li>
-        <li>SEO 友好设计</li>
-      </ul>
-    </td>
-    <td width="50%">
-      <h3 align="center">🌍 全球化</h3>
-      <div align="center">
-        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/b06e21e9d140cd6873ba7e2e382394bd.gif" width="100%"/>
-      </div>
-      <ul>
-        <li>多语言支持</li>
-        <li>自适应时区</li>
-        <li>国际化日期格式</li>
-        <li>RTL 布局支持</li>
-      </ul>
-    </td>
-  </tr>
-</table>
+### 🛠 技术特性
+- 基于 App Router 的页面路由
+- 服务端组件与流式渲染
+- 响应式图片优化
+- SEO 友好的元数据管理
+- 评论系统与实时交互
+- 地图可视化展示
 
 ## 🚀 技术栈
 
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=nextjs,react,typescript,tailwind,prisma,postgresql,redis,supabase" alt="技术栈图标" />
-</div>
+### 核心框架
+- **Next.js 14**: 应用框架
+- **React 18**: UI 库
+- **TypeScript**: 类型系统
+- **Tailwind CSS**: 样式解决方案
 
-<details>
-<summary>点击展开查看详细技术栈</summary>
+### UI 组件
+- **shadcn/ui**: 核心组件库
+- **Lucide Icons**: 图标系统
+- **Framer Motion**: 动画效果
+- **react-simple-maps**: 地图可视化
 
-<table>
-  <tr>
-    <th>类别</th>
-    <th>技术</th>
-    <th>用途</th>
-  </tr>
-  <tr>
-    <td rowspan="4">核心框架</td>
-    <td><img src="https://img.shields.io/badge/-Next.js%2014-000000?style=flat-square&logo=next.js" /></td>
-    <td>React 应用框架</td>
-  </tr>
-  <tr>
-    <td><img src="https://img.shields.io/badge/-React%2018-61DAFB?style=flat-square&logo=react&logoColor=black" /></td>
-    <td>用户界面库</td>
-  </tr>
-  <tr>
-    <td><img src="https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" /></td>
-    <td>类型系统</td>
-  </tr>
-  <tr>
-    <td><img src="https://img.shields.io/badge/-Tailwind%20CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" /></td>
-    <td>样式解决方案</td>
-  </tr>
-</table>
+### 状态管理
+- **React Hooks**: 组件状态
+- **Context API**: 全局状态
+- **Zustand**: 复杂状态
 
-[查看更多技术栈详情...](#)
+### 数据持久化
+- **Sanity.io**: 内容管理
+- **PostgreSQL**: 主数据库
+- **Prisma**: ORM
+- **Redis**: 缓存层
 
-</details>
+### 身份认证
+- **Clerk**: 用户认证
+- **Supabase**: 后端服务
 
 ## 📦 项目结构
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/goldbergyoni/nodebestpractices/master/assets/images/projectstructre-2.png" alt="项目结构" width="80%"/>
-</div>
+~~~
+resume-next-v1/
+├── app/                 # 页面路由
+│   ├── experience/     # 经验页面
+│   ├── projects/       # 项目页面
+│   ├── speaking/      # 留言页面
+│   └── hobbies/       # 兴趣爱好页面
+├── components/         # UI组件
+│   ├── ui/            # 基础UI组件
+│   └── layout/        # 布局组件
+├── lib/               # 工具函数
+├── prisma/            # 数据库模型
+├── public/            # 静态资源
+└── styles/            # 样式文件
+~~~
+
+## 🚀 快速开始
+
+1. 克隆项目
+~~~bash
+git clone https://github.com/your-username/resume-next-v1.git
+cd resume-next-v1
+~~~
+
+2. 安装依赖
+~~~bash
+pnpm install
+~~~
+
+3. 环境变量配置
+~~~bash
+cp .env.example .env.local
+~~~
+
+需要配置的环境变量:
+~~~env
+# 数据库
+DATABASE_URL=
+DIRECT_URL=
+
+# Clerk 认证
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+# Sanity CMS
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_DATASET=
+SANITY_API_TOKEN=
+~~~
+
+4. 启动开发服务器
+~~~bash
+pnpm dev
+~~~
+
+## 🔧 主要功能
+
+### 个人信息展示
+- 响应式个人信息卡片
+- 技能矩阵展示
+- 社交媒体链接
+
+### 项目展示
+- 项目卡片展示
+- 项目详情页
+- 技术栈标签
+- 实时更新标记
+
+### 工作经验
+- 时间线展示
+- 详细工作描述
+- 项目经历
+- 技术栈展示
+
+### 社交互动
+- 评论系统
+- 表情回应
+- 代码块展示
+- 实时通知
+
+### 兴趣爱好
+- 世界地图展示
+- 已访问地点标记
+- 计划访问地点
+- 交互式地图
 
 ## 📱 响应式设计
 
-<div align="center">
-  <table>
-    <tr>
-      <td align="center">
-        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/e3d03a7c2eb9b42e47007f856e20b405.jpg" alt="Mobile View" width="200"/>
-        <br />
-        <b>移动端</b>
-      </td>
-      <td align="center">
-        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/f6fe68be9d7f5e1bce44a4b7a7c9c27f.jpg" alt="Tablet View" width="300"/>
-        <br />
-        <b>平板端</b>
-      </td>
-      <td align="center">
-        <img src="https://cdn.dribbble.com/users/1615584/screenshots/15571949/media/51e8b56c70bc831faa0b6668c2c88590.jpg" alt="Desktop View" width="400"/>
-        <br />
-        <b>桌面端</b>
-      </td>
-    </tr>
-  </table>
-</div>
+- 移动端优先设计
+- 适配平板设备
+- 桌面端优化
+- 流畅的过渡动画
 
-## 📈 项目状态
+## 🔒 安全性
 
-<div align="center">
+- 用户认证
+- CSRF 保护
+- XSS 防护
+- 数据加密
 
-[![GitHub stars](https://img.shields.io/github/stars/your-username/resume-next-v1?style=for-the-badge)](https://github.com/your-username/resume-next-v1/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/resume-next-v1?style=for-the-badge)](https://github.com/your-username/resume-next-v1/network/members)
-[![GitHub issues](https://img.shields.io/github/issues/your-username/resume-next-v1?style=for-the-badge)](https://github.com/your-username/resume-next-v1/issues)
-[![GitHub license](https://img.shields.io/github/license/your-username/resume-next-v1?style=for-the-badge)](https://github.com/your-username/resume-next-v1/blob/main/LICENSE)
-[![Deploy Status](https://img.shields.io/github/deployments/your-username/resume-next-v1/Production?style=for-the-badge&label=vercel&logo=vercel)](https://vercel.com/your-username/resume-next-v1)
+## 🌐 部署
 
-</div>
+本项目使用 Vercel 进行部署:
 
-<div align="center">
-  <sub>Built with ❤️ by <a href="https://github.com/your-username">Your Name</a></sub>
-</div>
+1. Fork 本项目到你的 GitHub
+2. 在 Vercel 中导入项目
+3. 配置环境变量
+4. 部署完成
+
+## 📄 许可证
+
+[MIT License](LICENSE)
+
+## 🤝 贡献指南
+
+1. Fork 本项目
+2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 提交 Pull Request
+
+## 📞 联系方式
+
+- Email: your.email@example.com
+- GitHub: [your-github-profile](https://github.com/your-username)
+
+## 🙏 致谢
+
+感谢以下开源项目:
+- [Next.js](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [React Simple Maps](https://www.react-simple-maps.io/)
