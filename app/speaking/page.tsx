@@ -1,8 +1,8 @@
 "use client"
 
-import { SignInButton, SignedIn, SignedOut, useUser } from "@clerk/nextjs"
+import { SignInButton, SignedIn, SignedOut, useUser, useClerk } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useState, useCallback, memo, useEffect, Suspense, useRef } from "react"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -19,7 +19,8 @@ import {
     Loader2,
     Filter,
     Tag as TagIcon,
-    Smile
+    Smile,
+    AlertCircle
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import data from '@emoji-mart/data'
@@ -29,7 +30,17 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { getComments } from "@/lib/services/comment-service"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { AutoCarousel } from "@/components/ui/auto-carousel"
+import { Separator } from "@/components/ui/separator"
+import { Carousel } from "@/components/ui/carousel"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { Toaster, toast } from "react-hot-toast"
 
 // 预定义的标签
 const predefinedTags = [
@@ -74,6 +85,58 @@ const formatDate = (date: string) => {
     });
 };
 
+// 动画变体定义
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+}
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            type: "spring",
+            stiffness: 100
+        }
+    }
+}
+
+// 添加新的动画变体
+const pageTransition = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.6,
+            ease: [0.6, -0.05, 0.01, 0.99]
+        }
+    },
+    exit: { opacity: 0, y: -20 }
+};
+
+// 添加新的动画效果定义
+const shimmerAnimation = {
+    initial: {
+        backgroundPosition: "-500px 0",
+    },
+    animate: {
+        backgroundPosition: ["500px 0", "-500px 0"],
+        transition: {
+            repeat: Infinity,
+            duration: 3,
+            ease: "linear",
+        },
+    },
+};
+
 // CommentCard 组件
 const CommentCard = memo(({
     comment,
@@ -86,169 +149,142 @@ const CommentCard = memo(({
     onLike: (id: string) => void
     currentUserId?: string
 }) => {
-    const [isLiking, setIsLiking] = useState(false);
-    const isLiked = comment.likes.some((like: any) => like.userId === currentUserId);
+    const isLiked = comment.likes?.some((like: any) => like.user?.id === currentUserId);
 
-    const handleLike = async () => {
-        if (isLiking) return;
-        setIsLiking(true);
-        try {
-            await onLike(comment.id);
-        } finally {
-            setIsLiking(false);
-        }
+    const handleLike = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onLike(comment.id);
+    };
+
+    const handleReply = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onReply(comment.id);
     };
 
     return (
-        <Card className="p-4 mb-4">
-            <div className="flex gap-4">
-                <Avatar>
-                    <AvatarImage src={comment.user.avatarUrl} />
-                    <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                        <div>
-                            <span className="font-semibold">{comment.user.name}</span>
-                            <span className="text-sm text-muted-foreground ml-2">
+        <motion.div
+            whileHover={{ y: -5, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-[280px] h-[200px] flex-shrink-0"
+        >
+            <Card className="h-full border border-border/50 bg-card/95">
+                <div className="h-full p-4 flex flex-col">
+                    {/* 头部：用户信息 */}
+                    <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8 border-2 border-primary/20">
+                            <AvatarImage src={comment.user.avatarUrl} />
+                            <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                            <div className="font-medium text-sm">{comment.user.name}</div>
+                            <div className="text-[10px] text-muted-foreground">
                                 {formatDate(comment.createdAt)}
-                            </span>
+                            </div>
                         </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleLike}
-                            disabled={isLiking}
-                            className={cn(
-                                "gap-2",
-                                isLiked && "text-primary",
-                                isLiking && "opacity-50 cursor-not-allowed"
-                            )}
-                        >
-                            <Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
-                            <span>{comment.likes.length}</span>
-                        </Button>
                     </div>
-                    <p className="text-sm mb-2">{comment.content}</p>
-                    <div className="flex flex-wrap gap-2 mb-2">
-                        {comment.tags.map((tag: any) => (
-                            <Badge key={tag.name} variant="secondary">
-                                {tag.name}
-                            </Badge>
-                        ))}
+
+                    {/* 中部：评论内容 */}
+                    <div className="mt-3 flex-1">
+                        <p className="text-sm leading-relaxed line-clamp-3">
+                            {comment.content}
+                        </p>
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onReply(comment.id)}
-                        className="text-muted-foreground"
-                    >
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        Reply ({comment.replies.length})
-                    </Button>
+
+                    {/* 底部：标签和操作 */}
+                    <div className="mt-3 flex flex-col gap-2">
+                        {/* 标签 */}
+                        <div className="flex flex-wrap gap-1">
+                            {comment.tags.map((tag: any) => (
+                                <span
+                                    key={tag.name}
+                                    className="text-[10px] px-2 py-0.5 bg-muted rounded-full"
+                                >
+                                    {tag.name}
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* 操作按钮 */}
+                        <div className="flex items-center gap-4">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleLike}
+                                className={cn(
+                                    "h-8 px-2 gap-1",
+                                    isLiked && "text-red-500"
+                                )}
+                            >
+                                <motion.div
+                                    initial={false}
+                                    animate={isLiked ? { scale: [1, 1.2, 1] } : {}}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <Heart
+                                        className={cn(
+                                            "h-4 w-4 transition-colors duration-300",
+                                            isLiked && "fill-current text-red-500"
+                                        )}
+                                    />
+                                </motion.div>
+                                <span className="text-xs">{comment.likes?.length || 0}</span>
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleReply}
+                                className="h-8 px-2 gap-1"
+                            >
+                                <MessageCircle className="h-4 w-4" />
+                                <span className="text-xs">{comment.replies.length}</span>
+                            </Button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </Card>
-    )
-})
+            </Card>
+        </motion.div>
+    );
+});
 CommentCard.displayName = 'CommentCard'
 
-// 回复组件
-const ReplySection = memo(({
-    commentId,
-    onSubmit,
-    onCancel
-}: {
-    commentId: string
-    onSubmit: (content: string) => Promise<void>
-    onCancel: () => void
+// CommentList 组件
+const CommentList = memo(({ comments, user, onReply, onLike }: {
+    comments: any[]
+    user: any
+    onReply: (id: string) => void
+    onLike: (id: string) => void
 }) => {
-    const [content, setContent] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-
-    const handleEmojiSelect = (emoji: any) => {
-        setContent(prev => prev + emoji.native);
-        setShowEmojiPicker(false);
-    };
-
-    const handleSubmit = async () => {
-        if (!content.trim() || isSubmitting) return;
-        setIsSubmitting(true);
-        try {
-            await onSubmit(content);
-            setContent("");
-            onCancel();
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+    console.log('Rendering CommentList with comments:', comments);
 
     return (
-        <div className="ml-12 mt-2 space-y-2">
-            <div className="relative">
-                <Textarea
-                    placeholder="Write a reply..."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    disabled={isSubmitting}
-                    className="pr-12"
-                />
-                <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="absolute bottom-2 right-2 text-muted-foreground hover:text-primary"
-                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                        >
-                            <Smile className="h-5 w-5" />
-                        </Button>
-                    </PopoverTrigger>
-                    {showEmojiPicker && (
-                        <PopoverContent
-                            className="w-auto p-0"
-                            side="top"
-                            align="end"
-                        >
-                            <Picker
-                                data={data}
-                                onEmojiSelect={handleEmojiSelect}
-                                theme="light"
-                                previewPosition="none"
-                            />
-                        </PopoverContent>
-                    )}
-                </Popover>
-            </div>
-            <div className="flex gap-2 justify-end">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onCancel}
-                    disabled={isSubmitting}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    size="sm"
-                    onClick={handleSubmit}
-                    disabled={!content.trim() || isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                        "Reply"
-                    )}
-                </Button>
-            </div>
+        <div className="relative w-full h-[400px] my-16">
+            {/* 左右渐变遮罩 */}
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent z-10" />
+
+            <Carousel
+                items={comments.map(comment => (
+                    <CommentCard
+                        key={comment.id}
+                        comment={comment}
+                        onReply={onReply}
+                        onLike={onLike}
+                        currentUserId={user?.id}
+                    />
+                ))}
+                direction="ltr"
+                speed={30}
+                gap={20}
+                pauseOnHover={true}
+                className="no-scrollbar py-8"
+            />
         </div>
     );
 });
 
-ReplySection.displayName = 'ReplySection';
+CommentList.displayName = 'CommentList';
 
-// 评论输入组件
+// 评论输入件
 const CommentInput = ({
     value,
     onChange,
@@ -271,149 +307,124 @@ const CommentInput = ({
         onChange(value + emoji.native);
     };
 
+    const handleTagClick = (e: React.MouseEvent, tagId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onTagSelect(tagId);
+    };
+
+    const handleSubmit = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onSubmit();
+    };
+
     return (
-        <Card className="overflow-hidden border-2 border-muted hover:border-primary/50 transition-colors">
-            <div className="p-6 space-y-4">
-                <div className="flex items-center gap-4">
-                    <Avatar>
-                        <AvatarImage src={user?.imageUrl} />
-                        <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <h2 className="font-semibold">Start a Discussion</h2>
-                        <p className="text-sm text-muted-foreground">
-                            Share your thoughts with the community
-                        </p>
+        <motion.div className="relative py-8">
+            <Card className={cn(
+                "overflow-hidden backdrop-blur-sm border-2",
+                "bg-gradient-to-br from-background/95 via-background/90 to-background/80",
+                "hover:border-primary/50 transition-all duration-300 group"
+            )}>
+                <div className="p-8" onClick={(e) => e.stopPropagation()}>
+                    {/* 用户信息部分 */}
+                    <div className="flex items-center gap-4 mb-6">
+                        <Avatar className="h-12 w-12 ring-2 ring-primary/20">
+                            <AvatarImage src={user?.imageUrl} />
+                            <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+                                Share Your Thoughts
+                            </h2>
+                            <p className="text-sm text-muted-foreground">
+                                What's on your mind today?
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* 文本输入区域 */}
+                    <div className="relative group" onClick={(e) => e.stopPropagation()}>
+                        <Textarea
+                            placeholder="Type your message here..."
+                            value={value}
+                            onChange={(e) => onChange(e.target.value)}
+                            className="min-h-[120px] resize-none bg-muted/50 focus:bg-background transition-colors duration-300 text-lg pr-12"
+                            disabled={disabled}
+                        />
+                        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                            <Popover
+                                open={showEmojiPicker}
+                                onOpenChange={setShowEmojiPicker}
+                            >
+                                <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        <Smile className="h-5 w-5" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" side="top" align="end">
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                        <Picker
+                                            data={data}
+                                            onEmojiSelect={(emoji: any) => {
+                                                handleEmojiSelect(emoji);
+                                                setShowEmojiPicker(false);
+                                            }}
+                                            theme="light"
+                                            previewPosition="none"
+                                        />
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+
+                    {/* 标签选择区域 */}
+                    <div className="mt-6 flex flex-wrap gap-3" onClick={(e) => e.stopPropagation()}>
+                        {predefinedTags.map(tag => (
+                            <Button
+                                key={tag.id}
+                                variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                                className={cn(
+                                    "gap-2 transition-all duration-300",
+                                    selectedTags.includes(tag.id) && "ring-2 ring-primary/50 bg-gradient-to-r from-primary/20 to-purple-500/20"
+                                )}
+                                onClick={(e) => handleTagClick(e, tag.id)}
+                            >
+                                {tag.icon}
+                                {tag.label}
+                            </Button>
+                        ))}
+                    </div>
+
+                    {/* 提交按钮 */}
+                    <div className="mt-8 flex justify-end" onClick={(e) => e.stopPropagation()}>
+                        <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <Button
+                                onClick={handleSubmit}
+                                disabled={!value.trim() || disabled}
+                                className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 hover:opacity-90 text-white px-8 shadow-lg shadow-primary/20"
+                            >
+                                <Send className="h-4 w-4 mr-2" />
+                                Share
+                            </Button>
+                        </motion.div>
                     </div>
                 </div>
-                <div className="relative">
-                    <Textarea
-                        placeholder="What's on your mind?"
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        className="min-h-[120px] resize-none focus:ring-2 ring-primary pr-12"
-                        disabled={disabled}
-                    />
-                    <Popover open={showEmojiPicker} onOpenChange={setShowEmojiPicker}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="absolute bottom-2 right-2 text-muted-foreground hover:text-primary"
-                                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                            >
-                                <Smile className="h-5 w-5" />
-                            </Button>
-                        </PopoverTrigger>
-                        {showEmojiPicker && (
-                            <PopoverContent
-                                className="w-auto p-0"
-                                side="top"
-                                align="end"
-                            >
-                                <Picker
-                                    data={data}
-                                    onEmojiSelect={(emoji: any) => {
-                                        handleEmojiSelect(emoji);
-                                        setShowEmojiPicker(false);
-                                    }}
-                                    theme="light"
-                                    previewPosition="none"
-                                />
-                            </PopoverContent>
-                        )}
-                    </Popover>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                    {predefinedTags.map(tag => (
-                        <Button
-                            key={tag.id}
-                            variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => onTagSelect(tag.id)}
-                            className="gap-2"
-                        >
-                            {tag.icon}
-                            {tag.label}
-                        </Button>
-                    ))}
-                </div>
-                <div className="flex justify-end">
-                    <Button
-                        onClick={onSubmit}
-                        disabled={!value.trim() || disabled}
-                        className="gap-2"
-                    >
-                        <Send className="h-4 w-4" />
-                        Post Discussion
-                    </Button>
-                </div>
-            </div>
-        </Card>
+            </Card>
+        </motion.div>
     );
 };
 
-// 添加虚拟列表组件
-const VirtualizedCommentList = memo(({ comments, user, onReply, onLike, onReplyLike }: {
-    comments: any[]
-    user: any
-    onReply: (id: string) => void
-    onLike: (id: string) => void
-    onReplyLike: (id: string) => void
-}) => {
-    const [visibleRange, setVisibleRange] = useState({ start: 0, end: 10 });
-    const observerRef = useRef<IntersectionObserver | null>(null);
-    const lastCommentRef = useRef<HTMLDivElement | null>(null);
-
-    useEffect(() => {
-        observerRef.current = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && visibleRange.end < comments.length) {
-                    setVisibleRange(prev => ({
-                        start: prev.start,
-                        end: Math.min(prev.end + 5, comments.length)
-                    }));
-                }
-            },
-            { threshold: 0.5 }
-        );
-
-        return () => observerRef.current?.disconnect();
-    }, [comments.length, visibleRange.end]);
-
-    useEffect(() => {
-        if (lastCommentRef.current && observerRef.current) {
-            observerRef.current.observe(lastCommentRef.current);
-        }
-    }, [visibleRange]);
-
-    return (
-        <div className="space-y-6">
-            {comments.slice(0, visibleRange.end).map((comment, index) => (
-                <motion.div
-                    key={comment.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    ref={index === visibleRange.end - 1 ? lastCommentRef : null}
-                >
-                    <CommentCard
-                        comment={comment}
-                        onReply={onReply}
-                        onLike={onLike}
-                        currentUserId={user?.id}
-                    />
-                    {/* ... 回复部分保持不变 */}
-                </motion.div>
-            ))}
-        </div>
-    );
-});
-
-VirtualizedCommentList.displayName = 'VirtualizedCommentList';
-
 // DiscussionSection 组件
-const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
+const DiscussionSection = () => {
     const { user } = useUser();
     const {
         comments,
@@ -424,89 +435,148 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
         addReply,
         toggleLike,
         toggleReplyLike,
-        setComments,
-        fetchComments
-    } = useComments(initialComments)
+        fetchComments,
+        setComments
+    } = useComments([])
 
     const [newComment, setNewComment] = useState("")
     const [replyingTo, setReplyingTo] = useState<string | null>(null)
-    const [replyContent, setReplyContent] = useState("")
+    const [commentTags, setCommentTags] = useState<string[]>([])
+    const [syncError, setSyncError] = useState(false)
 
-    // 初始加载评论
-    useEffect(() => {
-        fetchComments();
-    }, [fetchComments]);
+    // 添加重试逻户同步
+    const syncUserData = async (retryCount = 3) => {
+        if (!user) return;
 
-    // 用户登录后同步用户信息到数据库
+        try {
+            const response = await fetch('/api/users/sync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    email: user.primaryEmailAddress?.emailAddress,
+                    name: `${user.firstName} ${user.lastName || ''}`,
+                    avatarUrl: user.imageUrl,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to sync user data');
+            }
+
+            setSyncError(false);
+        } catch (error) {
+            console.error('Error syncing user data:', error);
+            if (retryCount > 0) {
+                // 延迟重试
+                setTimeout(() => {
+                    syncUserData(retryCount - 1);
+                }, 2000); // 2秒后重试
+            } else {
+                setSyncError(true);
+            }
+        }
+    };
+
+    // 用户登录后同步用户信息
     useEffect(() => {
         if (user) {
-            const syncUserData = async () => {
-                try {
-                    const response = await fetch('/api/users/sync', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            userId: user.id,
-                            email: user.primaryEmailAddress?.emailAddress,
-                            name: `${user.firstName} ${user.lastName || ''}`,
-                            avatarUrl: user.imageUrl,
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to sync user data');
-                    }
-                } catch (error) {
-                    console.error('Error syncing user data:', error);
-                }
-            };
-
             syncUserData();
         }
     }, [user]);
 
     const handleSubmitComment = async () => {
         if (!newComment.trim() || !user) return;
+
+        // 如果用户同步失败，先尝试重新同步
+        if (syncError) {
+            await syncUserData();
+            if (syncError) {
+                toast.error("Unable to connect to the server. Please try again later.");
+                return;
+            }
+        }
+
         try {
-            await createComment(newComment, selectedTags);
+            await createComment(newComment, commentTags);
             setNewComment("");
-            // 发送评论后刷新列表
+            setCommentTags([]);
             await fetchComments();
+            toast.success("Comment posted successfully!");
         } catch (error) {
             console.error('Error submitting comment:', error);
+            toast.error("Failed to submit comment. Please try again.");
         }
     }
 
-    const handleSubmitReply = async (commentId: string) => {
-        if (!replyContent.trim() || !user) return;
+    const handleSubmitReply = async (commentId: string, content: string) => {
+        if (!content.trim() || !user) return;
         try {
-            await addReply(commentId, replyContent);
-            setReplyContent("");
+            await addReply(commentId, content);
             setReplyingTo(null);
-            // 发送回复后刷新列表
             await fetchComments();
         } catch (error) {
             console.error('Error submitting reply:', error);
         }
-    }
+    };
 
     const handleLike = async (commentId: string) => {
+        if (!user) return;
+
+        // 乐观更新UI
+        setComments(prevComments => prevComments.map(comment => {
+            if (comment.id === commentId) {
+                const isLiked = comment.likes?.some((like: any) => like.user?.id === user.id);
+                return {
+                    ...comment,
+                    likes: isLiked
+                        ? comment.likes.filter((like: any) => like.user?.id !== user.id)
+                        : [...(comment.likes || []), { user: { id: user.id } }]
+                };
+            }
+            return comment;
+        }));
+
         try {
             await toggleLike(commentId);
-            await fetchComments();
         } catch (error) {
             console.error('Error liking comment:', error);
+            // 如果失败，恢复数据
+            await fetchComments();
+            toast.error("Failed to update like. Please try again.");
         }
     };
 
     const handleReply = async (commentId: string, content: string) => {
+        if (!content.trim() || !user) return;
+
+        setComments(prevComments => prevComments.map(comment => {
+            if (comment.id === commentId) {
+                return {
+                    ...comment,
+                    replies: [...comment.replies, {
+                        id: Date.now().toString(),
+                        content,
+                        user: {
+                            id: user.id,
+                            name: user.firstName,
+                            avatarUrl: user.imageUrl
+                        },
+                        createdAt: new Date().toISOString()
+                    }]
+                };
+            }
+            return comment;
+        }));
+
         try {
             await addReply(commentId, content);
             await fetchComments();
         } catch (error) {
             console.error('Error replying to comment:', error);
+            await fetchComments();
         }
     };
 
@@ -518,18 +588,54 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
         }
     };
 
+    useEffect(() => {
+        const loadComments = async () => {
+            try {
+                console.log('Loading comments...');
+                await fetchComments();
+                console.log('Comments loaded successfully');
+            } catch (error) {
+                console.error('Error loading comments:', error);
+                toast.error("Failed to load comments. Please refresh the page.");
+            }
+        };
+
+        loadComments();
+    }, [fetchComments]);
+
     return (
-        <div className="space-y-8">
-            {/* 标签过滤器 */}
-            <div className="bg-muted/50 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Filter className="h-5 w-5" />
-                    Filter Discussions
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {predefinedTags.map(tag => (
+        <div className="space-y-8 relative">
+            {syncError && (
+                <Alert variant="destructive" className="mb-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Connection Error</AlertTitle>
+                    <AlertDescription>
+                        Unable to connect to the server. Some features may be limited.
                         <Button
-                            key={tag.id}
+                            variant="outline"
+                            size="sm"
+                            className="ml-2"
+                            onClick={() => syncUserData()}
+                        >
+                            Retry
+                        </Button>
+                    </AlertDescription>
+                </Alert>
+            )}
+
+            {/* 标签筛选 */}
+            <motion.div
+                className="flex flex-wrap gap-3"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+            >
+                {predefinedTags.map(tag => (
+                    <motion.div
+                        key={tag.id}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
+                        <Button
                             variant={selectedTags.includes(tag.id) ? "default" : "outline"}
                             onClick={() => {
                                 setSelectedTags(prev =>
@@ -539,32 +645,27 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
                                 )
                             }}
                             className={cn(
-                                "h-auto py-4 px-4 flex flex-col items-start gap-2 group transition-all",
+                                "gap-2 transition-all duration-300",
                                 selectedTags.includes(tag.id) && "ring-2 ring-offset-2 ring-primary"
                             )}
                         >
-                            <div className="flex items-center gap-2">
-                                <div className={cn("p-2 rounded-lg bg-background/50", tag.color)}>
-                                    {tag.icon}
-                                </div>
-                                <span className="font-medium">{tag.label}</span>
+                            <div className={cn("", tag.color)}>
+                                {tag.icon}
                             </div>
-                            <p className="text-sm text-muted-foreground text-left">
-                                {tag.description}
-                            </p>
+                            <span>{tag.label}</span>
                         </Button>
-                    ))}
-                </div>
-            </div>
+                    </motion.div>
+                ))}
+            </motion.div>
 
-            {/* 使用新的评论输入组件 */}
+            {/* 评论输入组件 */}
             <CommentInput
                 value={newComment}
                 onChange={setNewComment}
                 onSubmit={handleSubmitComment}
-                selectedTags={selectedTags}
+                selectedTags={commentTags}
                 onTagSelect={(tagId) => {
-                    setSelectedTags(prev =>
+                    setCommentTags(prev =>
                         prev.includes(tagId)
                             ? prev.filter(t => t !== tagId)
                             : [...prev, tagId]
@@ -572,120 +673,209 @@ const DiscussionSection = ({ initialComments }: { initialComments: any[] }) => {
                 }}
             />
 
-            {/* 使用虚拟列表 */}
+            {/* 评论展示区域 */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                <motion.div
+                    className="flex flex-col items-center justify-center py-12 space-y-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                >
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                     <p className="text-muted-foreground">Loading discussions...</p>
-                </div>
+                </motion.div>
             ) : Array.isArray(comments) && comments.length > 0 ? (
-                <VirtualizedCommentList
+                <CommentList
                     comments={comments}
                     user={user}
                     onReply={setReplyingTo}
                     onLike={handleLike}
-                    onReplyLike={handleReplyLike}
                 />
             ) : (
-                <div className="text-center py-12">
+                <motion.div
+                    className="text-center py-12"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                >
                     <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                     <h3 className="text-lg font-semibold mb-2">No discussions yet</h3>
                     <p className="text-muted-foreground">
                         Be the first to start a discussion!
                     </p>
-                </div>
+                </motion.div>
             )}
-        </div>
-    )
-}
 
-// 获取初始数据
-async function getInitialComments() {
-    try {
-        const comments = await getComments()
-        return comments
-    } catch (error) {
-        console.error('Error fetching initial comments:', error)
-        return []
-    }
-}
-
-// 主页面组件
-export default async function SpeakingPage() {
-    // 获取初始数据
-    const initialComments = await getInitialComments()
-
-    return (
-        <div className="container mx-auto px-4 py-8">
-            {/* 页面标题 */}
-            <div className="mb-8 text-center">
-                <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                    Join the Discussion
-                </h1>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Share your thoughts, ask questions, and connect with others in the community.
-                    All discussions are welcome, from technical topics to career advice.
-                </p>
-            </div>
-
-            <SignedIn>
-                <Suspense fallback={
-                    <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <p className="text-muted-foreground">Loading discussions...</p>
-                    </div>
-                }>
-                    <DiscussionSection initialComments={initialComments} />
-                </Suspense>
-            </SignedIn>
-
-            <SignedOut>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="flex flex-col items-center justify-center min-h-[40vh] text-center"
-                >
-                    <div className="mb-8 space-y-4">
-                        <div className="flex flex-wrap gap-4 justify-center">
-                            {predefinedTags.map(tag => (
-                                <Card key={tag.id} className="p-4 flex items-center gap-3 w-[200px]">
-                                    <div className={cn("p-2 rounded-lg bg-muted", tag.color)}>
-                                        {tag.icon}
-                                    </div>
-                                    <div className="text-left">
-                                        <h3 className="font-medium">{tag.label}</h3>
-                                        <p className="text-sm text-muted-foreground">
-                                            Discuss {tag.label.toLowerCase()} topics
-                                        </p>
-                                    </div>
-                                </Card>
-                            ))}
+            {/* 回复对话框 */}
+            <Dialog open={!!replyingTo} onOpenChange={() => setReplyingTo(null)}>
+                <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                        <DialogTitle>Reply to discussion</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                        {replyingTo && (
+                            <div className="p-4 rounded-lg bg-muted/50">
+                                <p className="text-sm text-muted-foreground">
+                                    {comments.find(c => c.id === replyingTo)?.content}
+                                </p>
+                            </div>
+                        )}
+                        <Textarea
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Write your reply..."
+                            className="min-h-[100px]"
+                        />
+                        <div className="flex justify-end gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => setReplyingTo(null)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    if (replyingTo) {
+                                        handleSubmitReply(replyingTo, newComment);
+                                    }
+                                }}
+                                disabled={!newComment.trim()}
+                            >
+                                Reply
+                            </Button>
                         </div>
                     </div>
-
-                    <Card className="p-6 max-w-md w-full bg-gradient-to-b from-background to-muted/50">
-                        <h2 className="text-2xl font-semibold mb-4">Start Participating</h2>
-                        <p className="text-muted-foreground mb-6">
-                            Sign in to join the conversation and share your insights with the community.
-                        </p>
-                        <SignInButton mode="modal" redirectUrl="/speaking">
-                            <Button size="lg" className="w-full gap-2">
-                                <MessageCircle className="h-5 w-5" />
-                                Sign in to Comment
-                            </Button>
-                        </SignInButton>
-                    </Card>
-                </motion.div>
-            </SignedOut>
-
-            {/* 页面底部 */}
-            <div className="mt-16 text-center text-sm text-muted-foreground">
-                <p>
-                    Please keep discussions respectful and constructive.
-                    See our community guidelines for more information.
-                </p>
-            </div>
+                </DialogContent>
+            </Dialog>
         </div>
+    );
+};
+
+// 主页面组件
+export default function SpeakingPage() {
+    const { signOut } = useClerk();
+
+    // 添加安全的登出处理函数
+    const handleSignOut = async () => {
+        try {
+            await signOut();
+        } catch (error) {
+            console.error('Error signing out:', error);
+            // 如果登出失败，刷新页面
+            window.location.reload();
+        }
+    };
+
+    return (
+        <>
+            <Toaster position="top-center" />
+            <motion.div
+                variants={pageTransition}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="container mx-auto px-4 py-16"
+            >
+                {/* 添加背景装饰 */}
+                <div className="fixed inset-0 -z-10">
+                    <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90" />
+                </div>
+
+                {/* 优化标题区域 */}
+                <motion.div className="mb-20 text-center relative">
+                    <motion.div
+                        className="absolute inset-0 -z-10"
+                        animate={{
+                            background: [
+                                "radial-gradient(circle at 50% 50%, rgba(var(--primary-rgb), 0.1) 0%, transparent 50%)",
+                                "radial-gradient(circle at 50% 50%, rgba(var(--primary-rgb), 0.15) 0%, transparent 70%)",
+                                "radial-gradient(circle at 50% 50%, rgba(var(--primary-rgb), 0.1) 0%, transparent 50%)",
+                            ],
+                        }}
+                        transition={{ duration: 4, repeat: Infinity }}
+                    />
+
+                    <h1 className={cn(
+                        "text-5xl font-bold mb-6",
+                        "bg-gradient-to-r from-primary via-purple-500 to-pink-500",
+                        "bg-clip-text text-transparent",
+                        "drop-shadow-sm"
+                    )}>
+                        Let's Talk
+                    </h1>
+
+                    <motion.p
+                        className="text-lg text-muted-foreground max-w-2xl mx-auto"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3 }}
+                    >
+                        Share your thoughts, ideas, and feedback. Every voice matters in making this space better.
+                    </motion.p>
+                </motion.div>
+
+                <SignedIn>
+                    {/* 添加登出按钮 */}
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleSignOut}
+                        className="absolute top-4 right-4"
+                    >
+                        Sign Out
+                    </Button>
+                    <Suspense fallback={
+                        <motion.div
+                            className="flex flex-col items-center justify-center py-16 space-y-4"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                        >
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                            <p className="text-muted-foreground">Loading the conversation...</p>
+                        </motion.div>
+                    }>
+                        <div className="space-y-16">
+                            <DiscussionSection />
+                        </div>
+                    </Suspense>
+                </SignedIn>
+
+                <SignedOut>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                        className="flex justify-center py-16"
+                    >
+                        <SignInButton mode="modal">
+                            <motion.div
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <Button
+                                    size="lg"
+                                    className="px-8 py-6 text-lg bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                                >
+                                    Sign in to Join Discussion
+                                </Button>
+                            </motion.div>
+                        </SignInButton>
+                    </motion.div>
+                </SignedOut>
+
+                {/* 页面底部 */}
+                <motion.div
+                    className="mt-24 text-center pb-8"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                >
+                    <p className="text-sm text-muted-foreground">
+                        Let's build a positive and constructive space together.
+                        <br />
+                        Your thoughts and feedback help make this community better.
+                    </p>
+                </motion.div>
+            </motion.div>
+        </>
     )
 } 
