@@ -24,19 +24,31 @@ export function Carousel({
     const containerRef = useRef<HTMLDivElement>(null);
     const controls = useAnimationControls();
     const [isPaused, setIsPaused] = useState(false);
+    const [contentWidth, setContentWidth] = useState(0);
 
     useEffect(() => {
         if (!containerRef.current) return;
-
         const container = containerRef.current;
-        const contentWidth = container.firstElementChild?.firstElementChild?.clientWidth || 0;
+        const firstChild = container.firstElementChild?.firstElementChild;
+
+        if (firstChild) {
+            const observer = new ResizeObserver(() => {
+                setContentWidth(firstChild.clientWidth || 0);
+            });
+
+            observer.observe(firstChild);
+            return () => observer.disconnect();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!contentWidth) return;
 
         const animate = async () => {
             const initialX = direction === 'ltr' ? 0 : -contentWidth;
             const targetX = direction === 'ltr' ? -contentWidth : 0;
 
             await controls.set({ x: initialX });
-
             await controls.start({
                 x: targetX,
                 transition: {
@@ -49,17 +61,14 @@ export function Carousel({
             });
         };
 
-        const timeoutId = setTimeout(() => {
-            if (!isPaused) {
-                animate();
-            }
-        }, 100);
+        if (!isPaused) {
+            animate();
+        }
 
         return () => {
-            clearTimeout(timeoutId);
             controls.stop();
         };
-    }, [direction, speed, controls, isPaused, items]);
+    }, [direction, speed, controls, isPaused, contentWidth]);
 
     const handleMouseEnter = () => {
         if (pauseOnHover) {
@@ -82,7 +91,7 @@ export function Carousel({
     return (
         <div
             className={cn(
-                "relative overflow-hidden",
+                "relative overflow-hidden will-change-transform",
                 className
             )}
             ref={containerRef}
@@ -99,8 +108,6 @@ export function Carousel({
                         key={i}
                         className="flex"
                         style={contentStyle}
-                        whileHover={{ scale: 1.02 }}
-                        transition={{ duration: 0.2 }}
                     >
                         {items}
                     </motion.div>

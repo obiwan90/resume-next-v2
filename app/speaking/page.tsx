@@ -149,76 +149,64 @@ const CommentCard = memo(({
     onLike: (id: string) => void
     currentUserId?: string
 }) => {
+    const [showRepliesDialog, setShowRepliesDialog] = useState(false);
+    const [replyContent, setReplyContent] = useState("");
     const isLiked = comment.likes?.some((like: any) => like.user?.id === currentUserId);
+    const latestReply = comment.replies?.[comment.replies.length - 1];
+    const repliesCount = comment.replies?.length || 0;
 
-    const handleLike = (e: React.MouseEvent) => {
+    const handleReplyClick = (e: React.MouseEvent) => {
+        e.preventDefault();
         e.stopPropagation();
-        onLike(comment.id);
-    };
+        // 保存当前滚动位置
+        const currentScroll = window.scrollY;
 
-    const handleReply = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        onReply(comment.id);
+        if (repliesCount > 0) {
+            setShowRepliesDialog(true);
+        } else {
+            onReply(comment.id);
+        }
+
+        // 在下一个事件循环中恢复滚动位置
+        requestAnimationFrame(() => {
+            window.scrollTo(0, currentScroll);
+        });
     };
 
     return (
-        <motion.div
-            whileHover={{ y: -5, scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-[280px] h-[200px] flex-shrink-0"
-        >
-            <Card className="h-full border border-border/50 bg-card/95">
-                <div className="h-full p-4 flex flex-col">
-                    {/* 头部：用户信息 */}
-                    <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8 border-2 border-primary/20">
-                            <AvatarImage src={comment.user.avatarUrl} />
-                            <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                            <div className="font-medium text-sm">{comment.user.name}</div>
-                            <div className="text-[10px] text-muted-foreground">
-                                {formatDate(comment.createdAt)}
+        <>
+            <motion.div
+                whileHover={{ y: -5, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-[280px] h-[200px] flex-shrink-0"
+            >
+                <Card className="h-full border border-border/50 bg-card/95">
+                    <div className="h-full p-4 flex flex-col">
+                        {/* 头部：用户信息和操作按钮 */}
+                        <div className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8 border-2 border-primary/20">
+                                <AvatarImage src={comment.user.avatarUrl} />
+                                <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm truncate">{comment.user.name}</div>
+                                <div className="text-[10px] text-muted-foreground">
+                                    {formatDate(comment.createdAt)}
+                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* 中部：评论内容 */}
-                    <div className="mt-3 flex-1">
-                        <p className="text-sm leading-relaxed line-clamp-3">
-                            {comment.content}
-                        </p>
-                    </div>
-
-                    {/* 底部：标签和操作 */}
-                    <div className="mt-3 flex flex-col gap-2">
-                        {/* 标签 */}
-                        <div className="flex flex-wrap gap-1">
-                            {comment.tags.map((tag: any) => (
-                                <span
-                                    key={tag.name}
-                                    className="text-[10px] px-2 py-0.5 bg-muted rounded-full"
-                                >
-                                    {tag.name}
-                                </span>
-                            ))}
-                        </div>
-
-                        {/* 操作按钮 */}
-                        <div className="flex items-center gap-4">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleLike}
-                                className={cn(
-                                    "h-8 px-2 gap-1",
-                                    isLiked && "text-red-500"
-                                )}
-                            >
-                                <motion.div
-                                    initial={false}
-                                    animate={isLiked ? { scale: [1, 1.2, 1] } : {}}
-                                    transition={{ duration: 0.3 }}
+                            {/* 操作按钮移到这里 */}
+                            <div className="flex items-center gap-1">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onLike(comment.id);
+                                    }}
+                                    className={cn(
+                                        "h-7 w-7 p-0", // 调整按钮大小
+                                        isLiked && "text-red-500"
+                                    )}
                                 >
                                     <Heart
                                         className={cn(
@@ -226,23 +214,158 @@ const CommentCard = memo(({
                                             isLiked && "fill-current text-red-500"
                                         )}
                                     />
-                                </motion.div>
-                                <span className="text-xs">{comment.likes?.length || 0}</span>
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleReplyClick}
+                                    className={cn(
+                                        "h-7 w-7 p-0",
+                                        repliesCount > 0 && "text-primary"
+                                    )}
+                                >
+                                    <MessageCircle className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* 中部：评论内容 */}
+                        <div className="mt-2 flex-1">
+                            <p className="text-sm leading-relaxed line-clamp-3">
+                                {comment.content}
+                            </p>
+                        </div>
+
+                        {/* 回复预览 */}
+                        {latestReply && (
+                            <div className="mt-2 bg-muted/50 rounded-lg p-2">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Avatar className="h-5 w-5">
+                                        <AvatarImage src={latestReply.user.avatarUrl} />
+                                        <AvatarFallback>{latestReply.user.name[0]}</AvatarFallback>
+                                    </Avatar>
+                                    <span className="text-xs font-medium">{latestReply.user.name}</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground line-clamp-1">
+                                    {latestReply.content}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* 底部：标签 */}
+                        <div className="mt-2">
+                            <div className="flex flex-wrap gap-1">
+                                {comment.tags.map((tag: any) => (
+                                    <span
+                                        key={tag.name}
+                                        className="text-[10px] px-2 py-0.5 bg-muted rounded-full"
+                                    >
+                                        {tag.name}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+            </motion.div>
+
+            {/* 回复对话框 */}
+            <Dialog
+                open={showRepliesDialog}
+                onOpenChange={(open) => {
+                    // 保存当前滚动位置
+                    const currentScroll = window.scrollY;
+                    setShowRepliesDialog(open);
+                    // 在下一个事件循环中恢复滚动位置
+                    requestAnimationFrame(() => {
+                        window.scrollTo(0, currentScroll);
+                    });
+                }}
+            >
+                <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Discussion Replies</DialogTitle>
+                    </DialogHeader>
+
+                    {/* 原始评论 */}
+                    <div className="border-b pb-4 mb-4">
+                        <div className="flex items-center gap-3 mb-2">
+                            <Avatar className="h-8 w-8">
+                                <AvatarImage src={comment.user.avatarUrl} />
+                                <AvatarFallback>{comment.user.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <div className="font-medium">{comment.user.name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                    {formatDate(comment.createdAt)}
+                                </div>
+                            </div>
+                        </div>
+                        <p className="text-sm">{comment.content}</p>
+                    </div>
+
+                    {/* 回复列表 */}
+                    <div className="space-y-4">
+                        {comment.replies?.map((reply: any) => (
+                            <motion.div
+                                key={reply.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="pl-4 border-l"
+                            >
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Avatar className="h-6 w-6">
+                                        <AvatarImage src={reply.user.avatarUrl} />
+                                        <AvatarFallback>{reply.user.name[0]}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-medium">{reply.user.name}</div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {formatDate(reply.createdAt)}
+                                        </div>
+                                    </div>
+                                </div>
+                                <p className="text-sm ml-8">{reply.content}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* 添加回复输入框 */}
+                    <div className="mt-4 pt-4 border-t">
+                        <Textarea
+                            placeholder="Add your reply..."
+                            className="min-h-[80px]"
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
+                        />
+                        <div className="flex justify-end mt-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setShowRepliesDialog(false);
+                                    setReplyContent("");
+                                }}
+                                className="mr-2"
+                            >
+                                Cancel
                             </Button>
                             <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={handleReply}
-                                className="h-8 px-2 gap-1"
+                                onClick={() => {
+                                    if (replyContent.trim()) {
+                                        onReply(comment.id);
+                                        setShowRepliesDialog(false);
+                                        setReplyContent("");
+                                    }
+                                }}
+                                disabled={!replyContent.trim()}
                             >
-                                <MessageCircle className="h-4 w-4" />
-                                <span className="text-xs">{comment.replies.length}</span>
+                                Reply
                             </Button>
                         </div>
                     </div>
-                </div>
-            </Card>
-        </motion.div>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 });
 CommentCard.displayName = 'CommentCard'
@@ -254,10 +377,22 @@ const CommentList = memo(({ comments, user, onReply, onLike }: {
     onReply: (id: string) => void
     onLike: (id: string) => void
 }) => {
+    const scrollRef = useRef<HTMLDivElement>(null);
+
+    // 保存滚动位置
+    useEffect(() => {
+        const scrollPosition = scrollRef.current?.scrollLeft || 0;
+        return () => {
+            if (scrollRef.current) {
+                scrollRef.current.scrollLeft = scrollPosition;
+            }
+        };
+    }, []);
+
     console.log('Rendering CommentList with comments:', comments);
 
     return (
-        <div className="relative w-full h-[400px] my-16">
+        <div className="relative w-full h-[400px] my-16" ref={scrollRef}>
             {/* 左右渐变遮罩 */}
             <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent z-10" />
             <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent z-10" />
@@ -440,6 +575,7 @@ const DiscussionSection = () => {
     } = useComments([])
 
     const [newComment, setNewComment] = useState("")
+    const [replyContent, setReplyContent] = useState("")
     const [replyingTo, setReplyingTo] = useState<string | null>(null)
     const [commentTags, setCommentTags] = useState<string[]>([])
     const [syncError, setSyncError] = useState(false)
@@ -705,7 +841,15 @@ const DiscussionSection = () => {
             )}
 
             {/* 回复对话框 */}
-            <Dialog open={!!replyingTo} onOpenChange={() => setReplyingTo(null)}>
+            <Dialog
+                open={!!replyingTo}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setReplyingTo(null);
+                        setReplyContent("");
+                    }
+                }}
+            >
                 <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle>Reply to discussion</DialogTitle>
@@ -719,25 +863,29 @@ const DiscussionSection = () => {
                             </div>
                         )}
                         <Textarea
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
+                            value={replyContent}
+                            onChange={(e) => setReplyContent(e.target.value)}
                             placeholder="Write your reply..."
                             className="min-h-[100px]"
                         />
                         <div className="flex justify-end gap-2">
                             <Button
                                 variant="outline"
-                                onClick={() => setReplyingTo(null)}
+                                onClick={() => {
+                                    setReplyingTo(null);
+                                    setReplyContent("");
+                                }}
                             >
                                 Cancel
                             </Button>
                             <Button
                                 onClick={() => {
-                                    if (replyingTo) {
-                                        handleSubmitReply(replyingTo, newComment);
+                                    if (replyingTo && replyContent.trim()) {
+                                        handleSubmitReply(replyingTo, replyContent);
+                                        setReplyContent("");
                                     }
                                 }}
-                                disabled={!newComment.trim()}
+                                disabled={!replyContent.trim()}
                             >
                                 Reply
                             </Button>
