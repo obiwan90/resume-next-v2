@@ -29,6 +29,9 @@ import {
   SiMysql,
   SiRedis,
   SiElasticsearch,
+  SiSanity,
+  SiClerk,
+  SiFirebase,
 } from 'react-icons/si'
 import { FaJava } from 'react-icons/fa'
 import { RiReactjsLine } from 'react-icons/ri'
@@ -54,7 +57,8 @@ const skills = {
         { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E" },
         { name: "TypeScript", icon: SiTypescript, color: "#3178C6" },
         { name: "React", icon: SiReact, color: "#61DAFB" },
-        { name: "Vue.js", icon: SiVuedotjs, color: "#4FC08D" }
+        { name: "Vue.js", icon: SiVuedotjs, color: "#4FC08D" },
+        { name: "Tailwind", icon: SiTailwindcss, color: "#06B6D4" }
       ]
     },
     backend: {
@@ -76,7 +80,8 @@ const skills = {
         { name: "UniApp", icon: RiReactjsLine, color: "#2B9939" },
         { name: "Flutter", icon: SiFlutter, color: "#02569B" },
         { name: "Supabase", icon: SiSupabase, color: "#3ECF8E" },
-        { name: "Prisma", icon: SiPrisma, color: "#2D3748" }
+        { name: "Prisma", icon: SiPrisma, color: "#2D3748" },
+        { name: "Firebase", icon: SiFirebase, color: "#FFCA28" }
       ]
     },
     fullstack: {
@@ -86,7 +91,9 @@ const skills = {
         { name: "Next.js", icon: SiNextdotjs, color: "#000000" },
         { name: "Nuxt.js", icon: SiNuxtdotjs, color: "#00DC82" },
         { name: "Vercel", icon: SiVercel, color: "#000000" },
-        { name: "Supabase", icon: SiSupabase, color: "#3ECF8E" }
+        { name: "Supabase", icon: SiSupabase, color: "#3ECF8E" },
+        { name: "Sanity", icon: SiSanity, color: "#F03E2F" },
+        { name: "Clerk", icon: SiClerk, color: "#6C47FF" }
       ]
     }
   }
@@ -177,13 +184,13 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
         {/* 动态背景 */}
         <div className="fixed inset-0 -z-10 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
 
         {/* 个人信息部分 */}
         <motion.section
-          className="mb-16"
+          className="mb-24"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -243,72 +250,52 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
                 Focused on creating seamless user experiences and scalable solutions.
               </motion.p>
 
+              {/* 优化后的社交链接 */}
               <motion.div
-                className="flex flex-wrap gap-2"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-              >
-                {['TypeScript', 'React', 'Node.js', 'Next.js', 'AWS'].map((skill) => (
-                  <Badge key={skill} variant="secondary" className="px-3 py-1">
-                    {skill}
-                  </Badge>
-                ))}
-              </motion.div>
-
-              <motion.div
-                className="flex flex-wrap gap-4 pt-4"
+                className="flex items-center gap-4 pt-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  asChild
+                <a
+                  href="mailto:your.email@example.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-200"
                 >
-                  <a
-                    href="mailto:your.email@example.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Mail className="h-4 w-4" />
-                    <span className="hidden sm:inline">Email</span>
-                  </a>
-                </Button>
+                  <div className="p-2 rounded-full bg-muted/80 hover:bg-primary/10">
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-medium hidden sm:inline">Contact</span>
+                </a>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  asChild
-                >
-                  <a
-                    href="https://linkedin.com/in/your-profile"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Linkedin className="h-4 w-4" />
-                    <span className="hidden sm:inline">LinkedIn</span>
-                  </a>
-                </Button>
+                <div className="h-4 w-[1px] bg-border" />
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2"
-                  asChild
+                <a
+                  href="https://linkedin.com/in/your-profile"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-200"
                 >
-                  <a
-                    href="https://github.com/your-username"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Github className="h-4 w-4" />
-                    <span className="hidden sm:inline">GitHub</span>
-                  </a>
-                </Button>
+                  <div className="p-2 rounded-full bg-muted/80 hover:bg-primary/10">
+                    <Linkedin className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-medium hidden sm:inline">LinkedIn</span>
+                </a>
+
+                <div className="h-4 w-[1px] bg-border" />
+
+                <a
+                  href="https://github.com/your-username"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-200"
+                >
+                  <div className="p-2 rounded-full bg-muted/80 hover:bg-primary/10">
+                    <Github className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-medium hidden sm:inline">GitHub</span>
+                </a>
               </motion.div>
             </div>
           </div>
@@ -317,7 +304,7 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
         {/* 当前工作部分 */}
         {currentExperience && (
           <motion.section
-            className="mb-16"
+            className="mb-24"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
@@ -377,14 +364,14 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
         )}
 
         {/* 最近项目和技术栈部分 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
           {/* Recent Projects Section */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
           >
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <Rocket className="h-6 w-6 text-primary" />
                 <h2 className="text-2xl font-bold">Recent Projects</h2>
@@ -463,11 +450,11 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.8 }}
           >
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-8">
               <Code2 className="h-6 w-6 text-primary" />
               <h2 className="text-2xl font-bold">Technical Arsenal</h2>
             </div>
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-1 gap-4">
               {Object.entries(skills.sections).map(([key, section]) => (
                 <motion.div
                   key={key}
@@ -515,7 +502,7 @@ export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPa
 
         {/* 底部装饰 */}
         <motion.div
-          className="text-center text-muted-foreground"
+          className="text-center text-muted-foreground py-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.9 }}
