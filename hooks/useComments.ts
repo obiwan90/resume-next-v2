@@ -26,41 +26,151 @@ export function useComments() {
 
     const createComment = useCallback(async (content: string, tags: string[]) => {
         if (!user) return;
+
+        const tempComment = {
+            id: `temp-${Date.now()}`,
+            content,
+            tags: tags.map(tag => ({ name: tag })),
+            createdAt: new Date().toISOString(),
+            user: {
+                name: user.firstName + ' ' + (user.lastName || ''),
+                avatarUrl: user.imageUrl,
+            },
+            likes: [],
+            replies: [],
+        };
+
+        setComments(prev => [tempComment, ...prev]);
+
         try {
-            await fetch('/api/comments', {
+            const response = await fetch('/api/comments', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ content, tags })
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to create comment');
+            }
+
+            const newComment = await response.json();
+            setComments(prev =>
+                prev.map(comment =>
+                    comment.id === tempComment.id ? newComment : comment
+                )
+            );
         } catch (error) {
             console.error('Error creating comment:', error);
-            throw error;
-        }
-    }, [user]);
-
-    const addReply = useCallback(async (commentId: string, content: string) => {
-        if (!user) return;
-        try {
-            await fetch(`/api/comments/${commentId}/replies`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content })
-            });
-        } catch (error) {
-            console.error('Error adding reply:', error);
+            setComments(prev => prev.filter(comment => comment.id !== tempComment.id));
             throw error;
         }
     }, [user]);
 
     const toggleLike = useCallback(async (commentId: string) => {
         if (!user) return;
+
+        setComments(prev => prev.map(comment => {
+            if (comment.id === commentId) {
+                const isLiked = comment.likes.some((like: any) => like.userId === user.id);
+                return {
+                    ...comment,
+                    likes: isLiked
+                        ? comment.likes.filter((like: any) => like.userId !== user.id)
+                        : [...comment.likes, { userId: user.id }]
+                };
+            }
+            return comment;
+        }));
+
         try {
             await fetch(`/api/comments/${commentId}/like`, {
                 method: 'POST'
             });
-            await fetchComments(); // 刷新评论列表以更新点赞状态
         } catch (error) {
             console.error('Error toggling like:', error);
+            await fetchComments();
+        }
+    }, [user, fetchComments]);
+
+    const addReply = useCallback(async (commentId: string, content: string) => {
+        if (!user) return;
+
+        const tempReply = {
+            id: `temp-${Date.now()}`,
+            content,
+            createdAt: new Date().toISOString(),
+            user: {
+                name: user.firstName + ' ' + (user.lastName || ''),
+                avatarUrl: user.imageUrl,
+            },
+            likes: []
+        };
+
+        setComments(prev => prev.map(comment => {
+            if (comment.id === commentId) {
+                return {
+                    ...comment,
+                    replies: [...comment.replies, tempReply]
+                };
+            }
+            return comment;
+        }));
+
+        try {
+            const response = await fetch(`/api/comments/${commentId}/replies`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to add reply');
+            }
+
+            const newReply = await response.json();
+            setComments(prev => prev.map(comment => {
+                if (comment.id === commentId) {
+                    return {
+                        ...comment,
+                        replies: comment.replies.map((reply: any) =>
+                            reply.id === tempReply.id ? newReply : reply
+                        )
+                    };
+                }
+                return comment;
+            }));
+        } catch (error) {
+            console.error('Error adding reply:', error);
+            await fetchComments();
+        }
+    }, [user, fetchComments]);
+
+    const toggleReplyLike = useCallback(async (replyId: string) => {
+        if (!user) return;
+
+        setComments(prev => prev.map(comment => ({
+            ...comment,
+            replies: comment.replies.map(reply => {
+                if (reply.id === replyId) {
+                    const isLiked = reply.likes.some((like: any) => like.userId === user.id);
+                    return {
+                        ...reply,
+                        likes: isLiked
+                            ? reply.likes.filter((like: any) => like.userId !== user.id)
+                            : [...reply.likes, { userId: user.id }]
+                    };
+                }
+                return reply;
+            })
+        })));
+
+        try {
+            await fetch(`/api/comments/replies/${replyId}/like`, {
+                method: 'POST'
+            });
+        } catch (error) {
+            console.error('Error toggling reply like:', error);
+            await fetchComments();
         }
     }, [user, fetchComments]);
 
@@ -72,6 +182,7 @@ export function useComments() {
         createComment,
         addReply,
         toggleLike,
+        toggleReplyLike,
         fetchComments
     };
 } 

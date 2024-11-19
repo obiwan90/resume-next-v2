@@ -18,16 +18,48 @@ import {
     Sparkles,
     Loader2,
     Filter,
-    Tag as TagIcon
+    Tag as TagIcon,
+    Smile
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 
 // 预定义的标签
 const predefinedTags = [
-    { id: 'tech', label: 'Technology', icon: <Code2 className="h-4 w-4" />, color: 'text-blue-500' },
-    { id: 'career', label: 'Career', icon: <Sparkles className="h-4 w-4" />, color: 'text-purple-500' },
-    { id: 'question', label: 'Question', icon: <MessageCircle className="h-4 w-4" />, color: 'text-green-500' },
-    { id: 'other', label: 'Other', icon: <Hash className="h-4 w-4" />, color: 'text-orange-500' }
+    {
+        id: 'tech',
+        label: 'Technology',
+        icon: <Code2 className="h-4 w-4" />,
+        color: 'text-blue-500',
+        description: 'Discuss tech trends and innovations'
+    },
+    {
+        id: 'career',
+        label: 'Career',
+        icon: <Sparkles className="h-4 w-4" />,
+        color: 'text-purple-500',
+        description: 'Share career insights and advice'
+    },
+    {
+        id: 'question',
+        label: 'Question',
+        icon: <MessageCircle className="h-4 w-4" />,
+        color: 'text-green-500',
+        description: 'Ask questions and seek help'
+    },
+    {
+        id: 'other',
+        label: 'Other',
+        icon: <Hash className="h-4 w-4" />,
+        color: 'text-orange-500',
+        description: 'Other interesting topics'
+    }
 ]
 
 // 添加日期格式化工具函数
@@ -180,6 +212,104 @@ const ReplySection = memo(({
 
 ReplySection.displayName = 'ReplySection';
 
+// 评论输入组件
+const CommentInput = ({
+    value,
+    onChange,
+    onSubmit,
+    disabled,
+    selectedTags,
+    onTagSelect
+}: {
+    value: string
+    onChange: (value: string) => void
+    onSubmit: () => void
+    disabled?: boolean
+    selectedTags: string[]
+    onTagSelect: (tagId: string) => void
+}) => {
+    const { user } = useUser();
+
+    const handleEmojiSelect = (emoji: any) => {
+        onChange(value + emoji.native);
+    };
+
+    return (
+        <Card className="overflow-hidden border-2 border-muted hover:border-primary/50 transition-colors">
+            <div className="p-6 space-y-4">
+                <div className="flex items-center gap-4">
+                    <Avatar>
+                        <AvatarImage src={user?.imageUrl} />
+                        <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h2 className="font-semibold">Start a Discussion</h2>
+                        <p className="text-sm text-muted-foreground">
+                            Share your thoughts with the community
+                        </p>
+                    </div>
+                </div>
+                <div className="relative">
+                    <Textarea
+                        placeholder="What's on your mind?"
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        className="min-h-[120px] resize-none focus:ring-2 ring-primary pr-12"
+                        disabled={disabled}
+                    />
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute bottom-2 right-2 text-muted-foreground hover:text-primary"
+                            >
+                                <Smile className="h-5 w-5" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                            className="w-auto p-0"
+                            side="top"
+                            align="end"
+                        >
+                            <Picker
+                                data={data}
+                                onEmojiSelect={handleEmojiSelect}
+                                theme="light"
+                                previewPosition="none"
+                            />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    {predefinedTags.map(tag => (
+                        <Button
+                            key={tag.id}
+                            variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => onTagSelect(tag.id)}
+                            className="gap-2"
+                        >
+                            {tag.icon}
+                            {tag.label}
+                        </Button>
+                    ))}
+                </div>
+                <div className="flex justify-end">
+                    <Button
+                        onClick={onSubmit}
+                        disabled={!value.trim() || disabled}
+                        className="gap-2"
+                    >
+                        <Send className="h-4 w-4" />
+                        Post Discussion
+                    </Button>
+                </div>
+            </div>
+        </Card>
+    );
+};
+
 // DiscussionSection 组件
 const DiscussionSection = () => {
     const { user } = useUser();
@@ -191,6 +321,7 @@ const DiscussionSection = () => {
         createComment,
         addReply,
         toggleLike,
+        toggleReplyLike,
         fetchComments
     } = useComments()
 
@@ -274,139 +405,153 @@ const DiscussionSection = () => {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        )
-    }
+    const handleReplyLike = async (replyId: string) => {
+        try {
+            await toggleReplyLike(replyId);
+        } catch (error) {
+            console.error('Error liking reply:', error);
+        }
+    };
 
     return (
         <div className="space-y-8">
-            {/* 标签选择器 */}
-            <div className="flex gap-2 flex-wrap">
-                {predefinedTags.map(tag => (
-                    <Button
-                        key={tag.id}
-                        variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                        onClick={() => {
-                            setSelectedTags(prev =>
-                                prev.includes(tag.id)
-                                    ? prev.filter(t => t !== tag.id)
-                                    : [...prev, tag.id]
-                            )
-                        }}
-                        className="gap-2"
-                    >
-                        {tag.icon}
-                        {tag.label}
-                    </Button>
-                ))}
+            {/* 标签过滤器 */}
+            <div className="bg-muted/50 p-6 rounded-lg">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <Filter className="h-5 w-5" />
+                    Filter Discussions
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {predefinedTags.map(tag => (
+                        <Button
+                            key={tag.id}
+                            variant={selectedTags.includes(tag.id) ? "default" : "outline"}
+                            onClick={() => {
+                                setSelectedTags(prev =>
+                                    prev.includes(tag.id)
+                                        ? prev.filter(t => t !== tag.id)
+                                        : [...prev, tag.id]
+                                )
+                            }}
+                            className={cn(
+                                "h-auto py-4 px-4 flex flex-col items-start gap-2 group transition-all",
+                                selectedTags.includes(tag.id) && "ring-2 ring-offset-2 ring-primary"
+                            )}
+                        >
+                            <div className="flex items-center gap-2">
+                                <div className={cn("p-2 rounded-lg bg-background/50", tag.color)}>
+                                    {tag.icon}
+                                </div>
+                                <span className="font-medium">{tag.label}</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground text-left">
+                                {tag.description}
+                            </p>
+                        </Button>
+                    ))}
+                </div>
             </div>
 
-            {/* 评论输入框 */}
-            <Card className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Start a Discussion</h2>
-                <div className="space-y-4">
-                    <Textarea
-                        placeholder="Share your thoughts..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        className="min-h-[120px]"
-                    />
-                    <div className="flex flex-wrap gap-2">
-                        {predefinedTags.map(tag => (
-                            <Button
-                                key={tag.id}
-                                variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => {
-                                    setSelectedTags(prev =>
-                                        prev.includes(tag.id)
-                                            ? prev.filter(t => t !== tag.id)
-                                            : [...prev, tag.id]
-                                    )
-                                }}
-                                className="gap-2"
-                            >
-                                {tag.icon}
-                                {tag.label}
-                            </Button>
-                        ))}
-                    </div>
-                    <div className="flex justify-end">
-                        <Button onClick={handleSubmitComment}>
-                            <Send className="h-4 w-4 mr-2" />
-                            Post
-                        </Button>
-                    </div>
-                </div>
-            </Card>
+            {/* 使用新的评论输入组件 */}
+            <CommentInput
+                value={newComment}
+                onChange={setNewComment}
+                onSubmit={handleSubmitComment}
+                selectedTags={selectedTags}
+                onTagSelect={(tagId) => {
+                    setSelectedTags(prev =>
+                        prev.includes(tagId)
+                            ? prev.filter(t => t !== tagId)
+                            : [...prev, tagId]
+                    )
+                }}
+            />
 
             {/* 评论列表 */}
-            <div className="space-y-4">
-                {Array.isArray(comments) && comments.map((comment: any) => (
-                    <div key={comment.id}>
-                        <CommentCard
-                            comment={comment}
-                            onReply={setReplyingTo}
-                            onLike={handleLike}
-                            currentUserId={user?.id}
-                        />
-                        {replyingTo === comment.id && (
-                            <ReplySection
-                                commentId={comment.id}
-                                onSubmit={(content) => handleReply(comment.id, content)}
-                                onCancel={() => setReplyingTo(null)}
-                            />
-                        )}
-                        {/* 显示回复列表 */}
-                        {comment.replies.length > 0 && (
-                            <div className="ml-12 space-y-4 mt-4">
-                                {comment.replies.map((reply: any) => (
-                                    <Card key={reply.id} className="p-4 bg-muted/50">
-                                        <div className="flex gap-4">
-                                            <Avatar>
-                                                <AvatarImage src={reply.user.avatarUrl} />
-                                                <AvatarFallback>{reply.user.name[0]}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="flex-1">
-                                                <div className="flex items-center justify-between mb-1">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-semibold">{reply.user.name}</span>
-                                                        <span className="text-sm text-muted-foreground">
-                                                            {formatDate(reply.createdAt)}
-                                                        </span>
-                                                    </div>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        onClick={() => handleReplyLike(reply.id)}
-                                                        className={cn(
-                                                            "gap-2",
-                                                            reply.likes.some((like: any) => like.userId === user?.id) && "text-primary"
-                                                        )}
-                                                    >
-                                                        <Heart className={cn(
-                                                            "h-4 w-4",
-                                                            reply.likes.some((like: any) => like.userId === user?.id) && "fill-current"
-                                                        )} />
-                                                        <span>{reply.likes.length}</span>
-                                                    </Button>
-                                                </div>
-                                                <p className="text-sm">{reply.content}</p>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
-                        )}
+            <div className="space-y-6">
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-muted-foreground">Loading discussions...</p>
                     </div>
-                ))}
-                {!Array.isArray(comments) && (
-                    <div className="text-center text-muted-foreground">
-                        No comments yet
+                ) : Array.isArray(comments) && comments.length > 0 ? (
+                    comments.map((comment: any) => (
+                        <motion.div
+                            key={comment.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4 }}
+                        >
+                            <CommentCard
+                                comment={comment}
+                                onReply={setReplyingTo}
+                                onLike={handleLike}
+                                currentUserId={user?.id}
+                            />
+                            {replyingTo === comment.id && (
+                                <ReplySection
+                                    commentId={comment.id}
+                                    onSubmit={(content) => handleReply(comment.id, content)}
+                                    onCancel={() => setReplyingTo(null)}
+                                />
+                            )}
+                            {/* 显示回复列表 */}
+                            {comment.replies.length > 0 && (
+                                <div className="ml-12 space-y-4 mt-4">
+                                    {comment.replies.map((reply: any) => (
+                                        <motion.div
+                                            key={reply.id}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <Card className="p-4 bg-muted/50 hover:bg-muted/70 transition-colors">
+                                                <div className="flex gap-4">
+                                                    <Avatar>
+                                                        <AvatarImage src={reply.user.avatarUrl} />
+                                                        <AvatarFallback>{reply.user.name[0]}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-semibold">{reply.user.name}</span>
+                                                                <span className="text-sm text-muted-foreground">
+                                                                    {formatDate(reply.createdAt)}
+                                                                </span>
+                                                            </div>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() => handleReplyLike(reply.id)}
+                                                                className={cn(
+                                                                    "gap-2 transition-all",
+                                                                    reply.likes.some((like: any) => like.userId === user?.id) && "text-primary"
+                                                                )}
+                                                            >
+                                                                <Heart className={cn(
+                                                                    "h-4 w-4 transition-all",
+                                                                    reply.likes.some((like: any) => like.userId === user?.id) && "fill-current"
+                                                                )} />
+                                                                <span>{reply.likes.length}</span>
+                                                            </Button>
+                                                        </div>
+                                                        <p className="text-sm">{reply.content}</p>
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            )}
+                        </motion.div>
+                    ))
+                ) : (
+                    <div className="text-center py-12">
+                        <MessageCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">No discussions yet</h3>
+                        <p className="text-muted-foreground">
+                            Be the first to start a discussion!
+                        </p>
                     </div>
                 )}
             </div>
