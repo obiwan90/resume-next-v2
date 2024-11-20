@@ -1,9 +1,38 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 
-export function useComments(initialComments: any[] = []) {
+interface Like {
+    userId: string;
+    commentId?: string | null;
+    replyId?: string | null;
+}
+
+interface User {
+    name: string;
+    avatarUrl: string;
+}
+
+interface Reply {
+    id: string;
+    content: string;
+    createdAt: string;
+    user: User;
+    likes: Like[];
+}
+
+interface Comment {
+    id: string;
+    content: string;
+    createdAt: string;
+    user: User;
+    likes: Like[];
+    replies: Reply[];
+    tags?: { name: string }[];
+}
+
+export function useComments(initialComments: Comment[] = []) {
     const { user } = useUser();
-    const [comments, setComments] = useState<any[]>(initialComments);
+    const [comments, setComments] = useState<Comment[]>(initialComments);
     const [loading, setLoading] = useState(false);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
@@ -156,13 +185,13 @@ export function useComments(initialComments: any[] = []) {
 
         setComments(prev => prev.map(comment => ({
             ...comment,
-            replies: comment.replies.map(reply => {
+            replies: comment.replies.map((reply: Reply) => {
                 if (reply.id === replyId) {
-                    const isLiked = reply.likes.some((like: any) => like.userId === user.id);
+                    const isLiked = reply.likes.some((like: Like) => like.userId === user.id);
                     return {
                         ...reply,
                         likes: isLiked
-                            ? reply.likes.filter((like: any) => like.userId !== user.id)
+                            ? reply.likes.filter(like => like.userId !== user.id)
                             : [...reply.likes, { userId: user.id }]
                     };
                 }

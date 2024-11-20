@@ -14,52 +14,15 @@ import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { cn } from "@/lib/utils"
 import { EmojiPicker } from "@/components/ui/emoji-picker"
-
-interface Comment {
-    id: string
-    content: string
-    createdAt: Date
-    updatedAt: Date
-    userId: string
-    user: {
-        id: string
-        name: string
-        email: string
-        avatarUrl: string | null
-        clerkId: string
-        createdAt: Date
-        updatedAt: Date
-    }
-    likes: {
-        id: string
-        userId: string
-        commentId: string | null
-        replyId: string | null
-        createdAt: Date
-    }[]
-    replies: {
-        id: string
-        content: string
-        createdAt: Date
-        updatedAt: Date
-        userId: string
-        commentId: string
-        user: {
-            id: string
-            name: string
-            email: string
-            avatarUrl: string | null
-            clerkId: string
-            createdAt: Date
-            updatedAt: Date
-        }
-    }[]
-}
+import { Comment } from '@/types/comment'
 
 interface CommentListProps {
     comments: Comment[]
-    userLikes: (string | null)[]
-    currentUserId?: string | null
+    currentUserId: string
+    onLike: (commentId: string) => void
+    onReply: (commentId: string, content: string) => void
+    onLikeReply: (commentId: string, replyId: string) => void
+    disabled?: boolean
 }
 
 const LikeAnimation = () => (
@@ -74,12 +37,19 @@ const LikeAnimation = () => (
     </motion.div>
 )
 
-export function CommentList({ comments, userLikes, currentUserId }: CommentListProps) {
+export function CommentList({
+    comments,
+    currentUserId,
+    onLike,
+    onReply,
+    onLikeReply,
+    disabled
+}: CommentListProps) {
     const [expandedComments, setExpandedComments] = useState<string[]>([])
     const [replyingTo, setReplyingTo] = useState<string | null>(null)
     const [replyContent, setReplyContent] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [likedComments, setLikedComments] = useState<string[]>(userLikes as string[])
+    const [likedComments, setLikedComments] = useState<string[]>([])
     const [likeCounts, setLikeCounts] = useState<Record<string, number>>(() => {
         return comments.reduce((acc, comment) => ({
             ...acc,

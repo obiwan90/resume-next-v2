@@ -1,19 +1,22 @@
 export interface Project {
     _id: string;
+    id: string;
     title: string;
-    slug: {
-        current: string;
-    };
     description: string;
-    coverImage: {
+    image: string;
+    coverImage?: {
         asset: {
             url: string;
         };
-        alt: string;
+        alt?: string;
     };
-    projectUrl?: string;
+    link?: string;
+    github?: string;
     githubUrl?: string;
+    projectUrl?: string;
     tags: string[];
+    featured: boolean;
+    slug: string;
     publishedAt: string;
-    isRecentUpdate: boolean;
+    isRecentUpdate?: boolean;
 } 

@@ -7,22 +7,7 @@ import { Rocket, Code2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import { PageTransition, PageLoadingAnimation, ScrollProgress, ScrollToTop } from "@/components/ui/page-transition"
-
-interface Project {
-    _id: string
-    title: string
-    description: string
-    coverImage: {
-        asset: {
-            url: string
-        }
-        alt: string
-    }
-    projectUrl?: string
-    githubUrl?: string
-    tags: string[]
-    isRecentUpdate: boolean
-}
+import { Project } from '@/types'
 
 interface ProjectsPageContentProps {
     projects: Project[]
@@ -74,7 +59,7 @@ const DynamicBackground = () => {
 const ProjectStats = ({ projects }: { projects: Project[] }) => {
     const totalProjects = projects.length
     const uniqueTags = [...new Set(projects.flatMap(p => p.tags))].length
-    const recentUpdates = projects.filter(p => p.isRecentUpdate).length
+    const recentUpdates = projects.filter(p => p.isRecentUpdate ?? false).length
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
@@ -145,12 +130,20 @@ const TagFilter = ({ tags, selectedTag, onSelectTag }: {
 }
 
 export function ProjectsPageContent({ projects }: ProjectsPageContentProps) {
+    // 确保所有项目数据都包含必需的字段
+    const validatedProjects: Project[] = projects.map(project => ({
+        ...project,
+        slug: project.slug || `project-${project.id}`,  // 提供默认值
+        publishedAt: project.publishedAt || new Date().toISOString(),  // 提供默认值
+        isRecentUpdate: project.isRecentUpdate || false  // 提供默认值
+    }))
+
     const [selectedTag, setSelectedTag] = useState<string | null>(null)
-    const allTags = [...new Set(projects.flatMap(p => p.tags))].sort()
+    const allTags = [...new Set(validatedProjects.flatMap(p => p.tags))].sort()
 
     const filteredProjects = selectedTag
-        ? projects.filter(p => p.tags.includes(selectedTag))
-        : projects
+        ? validatedProjects.filter(p => p.tags.includes(selectedTag))
+        : validatedProjects
 
     return (
         <PageTransition>

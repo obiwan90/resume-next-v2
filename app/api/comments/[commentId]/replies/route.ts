@@ -17,11 +17,11 @@ export async function POST(
     try {
         const { content } = await request.json();
 
-        const reply = await commentService.addReply({
+        const reply = await commentService.createReply(
+            params.commentId,
             content,
-            userId,
-            commentId: params.commentId
-        });
+            userId
+        );
 
         return NextResponse.json(reply);
     } catch (error) {

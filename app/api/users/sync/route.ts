@@ -1,33 +1,24 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getAuth } from "@clerk/nextjs/server";
+import { userService } from "@/lib/services/user-service";
+import type { NextRequest } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+    const auth = getAuth(request);
+    const userId = auth.userId;
+
+    if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
-        const { userId, email, name, avatarUrl } = await request.json();
+        const { email, name, avatarUrl } = await request.json();
 
-        if (!userId || !email || !name) {
-            return NextResponse.json(
-                { error: 'Missing required fields' },
-                { status: 400 }
-            );
-        }
-
-        // 同步到数据库
-        const user = await prisma.user.upsert({
-            where: {
-                clerkId: userId,
-            },
-            create: {
-                clerkId: userId,
-                email,
-                name,
-                avatarUrl,
-            },
-            update: {
-                email,
-                name,
-                avatarUrl,
-            },
+        const user = await userService.upsertUser({
+            clerkId: userId,
+            email,
+            name,
+            avatarUrl
         });
 
         return NextResponse.json(user);

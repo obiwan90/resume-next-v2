@@ -14,10 +14,12 @@ interface CommentInputProps {
         imageUrl: string
         firstName: string
     }
+    onCommentAdded?: () => void
 }
 
-export function CommentInput({ user }: CommentInputProps) {
+export function CommentInput({ user, onCommentAdded }: CommentInputProps) {
     const [content, setContent] = useState("")
+    const [selectedTags, setSelectedTags] = useState<string[]>([])
     const [isSubmitting, setIsSubmitting] = useState(false)
     const router = useRouter()
 
@@ -29,39 +31,26 @@ export function CommentInput({ user }: CommentInputProps) {
         e.preventDefault()
         if (!content.trim() || isSubmitting) return
 
+        setIsSubmitting(true)
         try {
-            setIsSubmitting(true)
-
-            const promise = fetch('/api/comments', {
+            const response = await fetch('/api/comments', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    content: content.trim(),
-                }),
-            }).then(async (res) => {
-                if (!res.ok) {
-                    const error = await res.text()
-                    throw new Error(error)
-                }
-                setContent("")
-                router.refresh()
+                body: JSON.stringify({ content, tags: selectedTags }),
             })
 
-            await toast.promise(
-                promise,
-                {
-                    loading: 'Posting comment...',
-                    success: 'Comment posted successfully!',
-                    error: (err) => {
-                        console.error('Comment post error:', err)
-                        return err?.message || 'Failed to post comment. Please try again.'
-                    }
-                }
-            )
+            if (!response.ok) {
+                throw new Error('Failed to post comment')
+            }
+
+            setContent('')
+            setSelectedTags([])
+            onCommentAdded?.()
+            toast.success('Comment posted!')
         } catch (error) {
-            console.error('Error adding comment:', error)
+            console.error('Error posting comment:', error)
             toast.error('Failed to post comment. Please try again.')
         } finally {
             setIsSubmitting(false)

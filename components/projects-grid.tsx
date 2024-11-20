@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Github, ExternalLink } from "lucide-react"
 import Image from "next/image"
-import { Project } from "../types"
+import { Project } from '@/types'
 
 interface ProjectsGridProps {
     projects: Project[]
@@ -24,7 +24,7 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
             className="h-full"
         >
             <Card className="group h-full overflow-hidden hover:shadow-lg transition-all duration-500 bg-card/50 backdrop-blur-sm border-primary/10">
-                {project.coverImage && (
+                {project.coverImage?.asset?.url && (
                     <div className="relative aspect-video overflow-hidden">
                         <Image
                             src={project.coverImage.asset.url}
@@ -55,27 +55,27 @@ const ProjectCard = ({ project, index }: { project: Project; index: number }) =>
                     </div>
 
                     <div className="flex gap-3 pt-4">
-                        {project.githubUrl && (
+                        {(project.githubUrl || project.github) && (
                             <Button
                                 variant="outline"
                                 size="sm"
                                 className="flex-1 gap-2 group hover:border-primary/50"
                                 asChild
                             >
-                                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                                <a href={project.githubUrl || project.github} target="_blank" rel="noopener noreferrer">
                                     <Github className="h-4 w-4 group-hover:rotate-12 transition-transform" />
                                     <span>Source Code</span>
                                 </a>
                             </Button>
                         )}
-                        {project.projectUrl && (
+                        {(project.projectUrl || project.link) && (
                             <Button
                                 variant="default"
                                 size="sm"
                                 className="flex-1 gap-2 group"
                                 asChild
                             >
-                                <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
+                                <a href={project.projectUrl || project.link} target="_blank" rel="noopener noreferrer">
                                     <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     <span>Live Demo</span>
                                 </a>

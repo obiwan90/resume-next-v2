@@ -1,205 +1,144 @@
-import { prisma } from '../prisma'
+import { prisma } from '@/lib/prisma'
+import { currentUser } from '@clerk/nextjs/server'
 
-export const commentService = {
-    // Get comments list
+class CommentService {
     async getComments() {
-        try {
-            const comments = await prisma.comment.findMany({
-                include: {
-                    user: true,
-                    likes: true,
-                    replies: {
-                        include: {
-                            user: true
-                        }
+        return await prisma.comment.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                user: true,
+                likes: true,
+                replies: {
+                    include: {
+                        user: true
                     }
                 },
-                orderBy: {
-                    createdAt: 'desc'
-                }
-            })
-            return comments
-        } catch (error) {
-            console.error('Error fetching comments:', error)
-            throw error
-        }
-    },
-
-    // Get user likes
-    async getUserLikes(userId: string) {
-        try {
-            const likes = await prisma.like.findMany({
-                where: {
-                    userId: userId
-                },
-                select: {
-                    commentId: true
-                }
-            })
-            return likes.map((like: { commentId: string }) => like.commentId)
-        } catch (error) {
-            console.error('Error fetching user likes:', error)
-            throw error
-        }
-    },
-
-    // Add comment
-    async addComment({ content, userId }: { content: string; userId: string }) {
-        try {
-            // First, get or create user in our database using Clerk ID
-            const user = await prisma.user.findUnique({
-                where: {
-                    clerkId: userId
-                }
-            })
-
-            if (!user) {
-                throw new Error('User not found')
+                tags: true
             }
-
-            // Create the comment
-            const comment = await prisma.comment.create({
-                data: {
-                    content,
-                    userId: user.id,
-                },
-                include: {
-                    user: true,
-                    likes: true,
-                    replies: {
-                        include: {
-                            user: true
-                        }
-                    }
-                }
-            })
-
-            return comment
-        } catch (error) {
-            console.error('Error adding comment:', error)
-            throw error
-        }
-    },
-
-    // Add reply
-    async addReply({ content, userId, commentId }: { content: string; userId: string; commentId: string }) {
-        try {
-            // First, get or create user in our database using Clerk ID
-            const user = await prisma.user.findUnique({
-                where: {
-                    clerkId: userId
-                }
-            })
-
-            if (!user) {
-                throw new Error('User not found')
-            }
-
-            // Create the reply
-            const reply = await prisma.reply.create({
-                data: {
-                    content,
-                    userId: user.id,
-                    commentId
-                },
-                include: {
-                    user: true
-                }
-            })
-
-            return reply
-        } catch (error) {
-            console.error('Error adding reply:', error)
-            throw error
-        }
-    },
-
-    // Toggle like
-    async toggleLike({ userId, commentId }: { userId: string; commentId: string }) {
-        try {
-            // First, get or create user in our database using Clerk ID
-            const user = await prisma.user.findUnique({
-                where: {
-                    clerkId: userId
-                }
-            })
-
-            if (!user) {
-                throw new Error('User not found')
-            }
-
-            const existingLike = await prisma.like.findFirst({
-                where: {
-                    userId: user.id,
-                    commentId
-                }
-            })
-
-            if (existingLike) {
-                await prisma.like.delete({
-                    where: {
-                        id: existingLike.id
-                    }
-                })
-                return false
-            } else {
-                await prisma.like.create({
-                    data: {
-                        userId: user.id,
-                        commentId
-                    }
-                })
-                return true
-            }
-        } catch (error) {
-            console.error('Error toggling like:', error)
-            throw error
-        }
-    },
-
-    // 添加回复点赞切换方法
-    async toggleReplyLike({ userId, replyId }: { userId: string; replyId: string }) {
-        try {
-            // 首先查找用户
-            const user = await prisma.user.findUnique({
-                where: {
-                    clerkId: userId
-                }
-            })
-
-            if (!user) {
-                throw new Error('User not found')
-            }
-
-            // 查找是否已经点赞
-            const existingLike = await prisma.like.findFirst({
-                where: {
-                    userId: user.id,
-                    replyId
-                }
-            })
-
-            if (existingLike) {
-                // 如果已经点赞，则取消点赞
-                await prisma.like.delete({
-                    where: {
-                        id: existingLike.id
-                    }
-                })
-                return false
-            } else {
-                // 如果未点赞，则添加点赞
-                await prisma.like.create({
-                    data: {
-                        userId: user.id,
-                        replyId
-                    }
-                })
-                return true
-            }
-        } catch (error) {
-            console.error('Error toggling reply like:', error)
-            throw error
-        }
+        })
     }
-} 
+
+    async getUserLikes(userId: string) {
+        return await prisma.like.findMany({
+            where: {
+                userId,
+                commentId: { not: null }
+            }
+        })
+    }
+
+    async createComment(content: string, tags: string[]) {
+        const user = await currentUser()
+        if (!user) throw new Error('User not authenticated')
+
+        const dbUser = await prisma.user.findUnique({
+            where: { clerkId: user.id }
+        })
+        if (!dbUser) throw new Error('User not found in database')
+
+        return await prisma.comment.create({
+            data: {
+                content,
+                userId: dbUser.id,
+                tags: {
+                    connectOrCreate: tags.map(tag => ({
+                        where: { id: tag },
+                        create: { name: tag }
+                    }))
+                }
+            },
+            include: {
+                user: true,
+                likes: true,
+                replies: {
+                    include: {
+                        user: true
+                    }
+                },
+                tags: true
+            }
+        })
+    }
+
+    async toggleLike(commentId: string, userId: string) {
+        const existingLike = await prisma.like.findFirst({
+            where: {
+                userId,
+                commentId
+            }
+        })
+
+        if (existingLike) {
+            await prisma.like.delete({
+                where: {
+                    id: existingLike.id
+                }
+            })
+            return false
+        }
+
+        await prisma.like.create({
+            data: {
+                userId,
+                commentId
+            }
+        })
+        return true
+    }
+
+    async createReply(commentId: string, content: string, userId: string) {
+        return await prisma.reply.create({
+            data: {
+                content,
+                userId,
+                commentId
+            },
+            include: {
+                user: true,
+                likes: true,
+                comment: {
+                    include: {
+                        user: true,
+                        likes: true,
+                        replies: {
+                            include: {
+                                user: true,
+                                likes: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    async toggleReplyLike(replyId: string, userId: string) {
+        const existingLike = await prisma.like.findFirst({
+            where: {
+                userId,
+                replyId
+            }
+        })
+
+        if (existingLike) {
+            await prisma.like.delete({
+                where: {
+                    id: existingLike.id
+                }
+            })
+            return false
+        }
+
+        await prisma.like.create({
+            data: {
+                userId,
+                replyId
+            }
+        })
+        return true
+    }
+}
+
+export const commentService = new CommentService() 
