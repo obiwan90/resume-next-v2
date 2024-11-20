@@ -78,8 +78,8 @@ const countryImages = {
 
 export function AppHobbiesPage() {
   const [activeHobby, setActiveHobby] = useState<'gaming' | 'travel'>('travel')
-  const [tooltipContent, setTooltipContent] = useState("")
-
+  // const [tooltipContent, setTooltipContent] = useState("")
+  const [tooltipContent] = useState("")
   const games = [
     {
       name: 'League of Legends',
