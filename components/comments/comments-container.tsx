@@ -57,6 +57,9 @@ export function CommentsContainer({ initialComments, currentUser }: CommentsCont
                     : comment
             )
         )
+        const response = await fetch(`/api/comments/${commentId}/like`, {
+            method: 'POST'
+        });
     }
 
     const handleReply = (commentId: string, content: string) => {
