@@ -1,177 +1,159 @@
 import { prisma } from '../prisma'
 
 export const commentService = {
-    // 创建评论
-    async createComment(data: {
-        content: string
-        clerkUserId: string
-        tags: string[]
-    }) {
-        // 获取数据库中的用户
-        const user = await prisma.user.findUnique({
-            where: { clerkId: data.clerkUserId }
-        });
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        return prisma.comment.create({
-            data: {
-                content: data.content,
-                userId: user.id,
-                tags: {
-                    connectOrCreate: data.tags.map(tag => ({
-                        where: { name: tag },
-                        create: { name: tag }
-                    }))
-                }
-            },
-            include: {
-                user: true,
-                tags: true,
-                likes: true,
-                replies: {
-                    include: {
-                        user: true
+    // Get comments list
+    async getComments() {
+        try {
+            const comments = await prisma.comment.findMany({
+                include: {
+                    user: true,
+                    likes: true,
+                    replies: {
+                        include: {
+                            user: true
+                        }
                     }
+                },
+                orderBy: {
+                    createdAt: 'desc'
                 }
-            }
-        })
+            })
+            return comments
+        } catch (error) {
+            console.error('Error fetching comments:', error)
+            throw error
+        }
     },
 
-    // 获取评论列表
-    async getComments(filter?: { tags?: string[] }) {
-        return prisma.comment.findMany({
-            where: filter?.tags ? {
-                tags: {
-                    some: {
-                        name: {
-                            in: filter.tags
+    // Get user likes
+    async getUserLikes(userId: string) {
+        try {
+            const likes = await prisma.like.findMany({
+                where: {
+                    userId: userId
+                },
+                select: {
+                    commentId: true
+                }
+            })
+            return likes.map(like => like.commentId)
+        } catch (error) {
+            console.error('Error fetching user likes:', error)
+            throw error
+        }
+    },
+
+    // Add comment
+    async addComment({ content, userId }: { content: string; userId: string }) {
+        try {
+            // First, get or create user in our database using Clerk ID
+            const user = await prisma.user.findUnique({
+                where: {
+                    clerkId: userId
+                }
+            })
+
+            if (!user) {
+                throw new Error('User not found')
+            }
+
+            // Create the comment
+            const comment = await prisma.comment.create({
+                data: {
+                    content,
+                    userId: user.id,
+                },
+                include: {
+                    user: true,
+                    likes: true,
+                    replies: {
+                        include: {
+                            user: true
                         }
                     }
                 }
-            } : undefined,
-            include: {
-                user: true,
-                tags: true,
-                likes: {
-                    include: {
-                        user: true
-                    }
-                },
-                replies: {
-                    include: {
-                        user: true,
-                        likes: true
-                    },
-                    orderBy: {
-                        createdAt: 'asc'
-                    }
+            })
+
+            return comment
+        } catch (error) {
+            console.error('Error adding comment:', error)
+            throw error
+        }
+    },
+
+    // Add reply
+    async addReply({ content, userId, commentId }: { content: string; userId: string; commentId: string }) {
+        try {
+            // First, get or create user in our database using Clerk ID
+            const user = await prisma.user.findUnique({
+                where: {
+                    clerkId: userId
                 }
-            },
-            orderBy: {
-                createdAt: 'desc'
+            })
+
+            if (!user) {
+                throw new Error('User not found')
             }
-        });
+
+            // Create the reply
+            const reply = await prisma.reply.create({
+                data: {
+                    content,
+                    userId: user.id,
+                    commentId
+                },
+                include: {
+                    user: true
+                }
+            })
+
+            return reply
+        } catch (error) {
+            console.error('Error adding reply:', error)
+            throw error
+        }
     },
 
-    // 添加回复
-    async addReply(data: {
-        content: string
-        clerkUserId: string
-        commentId: string
-    }) {
-        // 首先获取数据库中的用户
-        const user = await prisma.user.findUnique({
-            where: { clerkId: data.clerkUserId }
-        });
+    // Toggle like
+    async toggleLike({ userId, commentId }: { userId: string; commentId: string }) {
+        try {
+            // First, get or create user in our database using Clerk ID
+            const user = await prisma.user.findUnique({
+                where: {
+                    clerkId: userId
+                }
+            })
 
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        return prisma.reply.create({
-            data: {
-                content: data.content,
-                userId: user.id,
-                commentId: data.commentId
-            },
-            include: {
-                user: true
+            if (!user) {
+                throw new Error('User not found')
             }
-        })
-    },
 
-    // 点赞/取消点赞
-    async toggleLike(clerkUserId: string, commentId: string) {
-        // 首先获取数据库中的用户
-        const user = await prisma.user.findUnique({
-            where: { clerkId: clerkUserId }
-        });
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        const existingLike = await prisma.like.findUnique({
-            where: {
-                userId_commentId: {
-                    userId: user.id,  // 使用数据库中的用户ID
+            const existingLike = await prisma.like.findFirst({
+                where: {
+                    userId: user.id,
                     commentId
                 }
-            }
-        });
+            })
 
-        if (existingLike) {
-            return prisma.like.delete({
-                where: {
-                    id: existingLike.id
-                }
-            });
+            if (existingLike) {
+                await prisma.like.delete({
+                    where: {
+                        id: existingLike.id
+                    }
+                })
+                return false
+            } else {
+                await prisma.like.create({
+                    data: {
+                        userId: user.id,
+                        commentId
+                    }
+                })
+                return true
+            }
+        } catch (error) {
+            console.error('Error toggling like:', error)
+            throw error
         }
-
-        return prisma.like.create({
-            data: {
-                userId: user.id,  // 使用数据库中的用户ID
-                commentId
-            }
-        });
-    },
-
-    // 添加回复点赞方法
-    async toggleReplyLike(clerkUserId: string, replyId: string) {
-        // 首先获取数据库中的用户
-        const user = await prisma.user.findUnique({
-            where: { clerkId: clerkUserId }
-        });
-
-        if (!user) {
-            throw new Error('User not found');
-        }
-
-        const existingLike = await prisma.like.findUnique({
-            where: {
-                userId_replyId: {
-                    userId: user.id,
-                    replyId
-                }
-            }
-        });
-
-        if (existingLike) {
-            return prisma.like.delete({
-                where: {
-                    id: existingLike.id
-                }
-            });
-        }
-
-        return prisma.like.create({
-            data: {
-                userId: user.id,
-                replyId
-            }
-        });
     }
 } 

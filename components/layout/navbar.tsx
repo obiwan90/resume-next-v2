@@ -1,139 +1,125 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { usePathname } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Menu } from "lucide-react"
-import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Code2, Home, Briefcase, FolderGit2, MessageSquare, Palette } from "lucide-react"
+import { UserButton, useUser } from "@clerk/nextjs"
 import {
-    Sheet,
-    SheetContent,
-    SheetTrigger,
-    SheetHeader,
-    SheetTitle,
-} from "@/components/ui/sheet"
-import { UserButton, SignedIn } from "@clerk/nextjs";
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/ui/avatar"
 
 const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Experience", href: "/experience" },
-    { name: "Projects", href: "/projects" },
-    { name: "Speaking", href: "/speaking" },
-    { name: "Hobbies", href: "/hobbies" },
+    {
+        name: "Home",
+        href: "/",
+        icon: <Home className="h-4 w-4" />
+    },
+    {
+        name: "Experience",
+        href: "/experience",
+        icon: <Briefcase className="h-4 w-4" />
+    },
+    {
+        name: "Projects",
+        href: "/projects",
+        icon: <FolderGit2 className="h-4 w-4" />
+    },
+    {
+        name: "Speaking",
+        href: "/speaking",
+        icon: <MessageSquare className="h-4 w-4" />
+    },
+    {
+        name: "Hobbies",
+        href: "/hobbies",
+        icon: <Palette className="h-4 w-4" />
+    },
 ]
 
 export function Navbar() {
     const pathname = usePathname()
     const [isScrolled, setIsScrolled] = useState(false)
-    const [isMobile, setIsMobile] = useState(false)
-    const [isOpen, setIsOpen] = useState(false)
+    const { user } = useUser()
 
-    // 监听滚动事件
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0)
+            setIsScrolled(window.scrollY > 20)
         }
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
-    // 监听窗口大小变化
-    useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 768)
-        }
-        handleResize()
-        window.addEventListener('resize', handleResize)
-        return () => window.removeEventListener('resize', handleResize)
-    }, [])
-
     return (
         <header className={cn(
-            "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-            isScrolled && "shadow-sm"
+            "navbar-float z-50",
+            isScrolled && "scrolled"
         )}>
-            <div className="container flex h-16 items-center justify-between px-4">
-                {/* 左侧：移动端菜单按钮和桌面端 Logo */}
-                <div className="flex items-center">
-                    {/* 移动端菜单按钮 */}
-                    <div className="md:hidden">
-                        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon" className="mr-2">
-                                    <Menu className="h-5 w-5" />
-                                    <span className="sr-only">Toggle menu</span>
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent side="left" className="w-[240px] sm:w-[300px]">
-                                <SheetHeader>
-                                    <SheetTitle className="text-left">Navigation</SheetTitle>
-                                </SheetHeader>
-                                <nav className="flex flex-col gap-4 mt-6">
-                                    {navItems.map((item) => (
-                                        <Link
-                                            key={item.name}
-                                            href={item.href}
-                                            onClick={() => setIsOpen(false)}
-                                            className={cn(
-                                                "px-4 py-2 rounded-md text-sm font-medium transition-all duration-200",
-                                                pathname === item.href
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "text-muted-foreground hover:bg-muted hover:text-primary hover:translate-x-1"
-                                            )}
-                                        >
-                                            {item.name}
-                                        </Link>
-                                    ))}
-                                </nav>
-                            </SheetContent>
-                        </Sheet>
-                    </div>
+            <div className="container flex h-14 items-center justify-between">
+                {/* Logo */}
+                <Link
+                    href="/"
+                    className="flex items-center space-x-2"
+                >
+                    <motion.div
+                        initial={{ scale: 0.8, rotate: -20 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20
+                        }}
+                    >
+                        <Code2 className="h-5 w-5 text-primary" />
+                    </motion.div>
+                    <span className="hidden md:inline-block font-bold gradient-text text-sm">
+                        Portfolio
+                    </span>
+                </Link>
 
-                    {/* 桌面端 Logo */}
-                    <div className="hidden md:block">
-                        <Link
-                            href="/"
-                            className="text-xl font-semibold hover:text-primary transition-all duration-300"
-                        >
-                            Coder's Portfolio
-                        </Link>
-                    </div>
-                </div>
-
-                {/* 中间：桌面端导航 */}
-                <nav className="hidden md:flex flex-1 justify-center space-x-1">
+                {/* 导航链接 - 桌面端显示完整导航，移动端只显示图标 */}
+                <nav className="flex items-center">
                     {navItems.map((item) => (
                         <Link
-                            key={item.name}
+                            key={item.href}
                             href={item.href}
                             className={cn(
-                                "px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200",
+                                "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-300",
+                                "hover:bg-accent hover:text-accent-foreground",
                                 pathname === item.href
-                                    ? "bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:bg-muted hover:text-primary"
+                                    ? "bg-accent text-accent-foreground shadow-sm"
+                                    : "text-muted-foreground hover:translate-y-[-1px]",
+                                "md:px-3 md:py-1.5",
+                                "px-2 py-2"
                             )}
                         >
-                            {item.name}
+                            {item.icon}
+                            <span className="hidden md:inline">{item.name}</span>
                         </Link>
                     ))}
+                    <div className="ml-2 flex items-center gap-2">
+                        <ThemeToggle />
+                        {user && (
+                            <div className="ml-2">
+                                <UserButton
+                                    afterSignOutUrl="/"
+                                    afterSignInUrl="/speaking"
+                                    appearance={{
+                                        elements: {
+                                            avatarBox: "w-8 h-8"
+                                        }
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </nav>
-
-                {/* 右侧：主题切换按钮和用户按钮 */}
-                <div className="flex items-center gap-4">
-                    <ThemeToggle />
-                    <SignedIn>
-                        <UserButton
-                            afterSignOutUrl="/speaking"
-                            appearance={{
-                                elements: {
-                                    avatarBox: "w-8 h-8",
-                                }
-                            }}
-                        />
-                    </SignedIn>
-                </div>
             </div>
         </header>
     )

@@ -35,4 +35,30 @@ export async function getCurrentExperience() {
     }
 
     return client.fetch(currentExperienceQuery, {}, options)
+}
+
+export async function getSpeakingEngagements() {
+    const query = `*[_type == "speaking"] | order(date desc) {
+        _id,
+        title,
+        description,
+        date,
+        location,
+        eventName,
+        eventUrl,
+        recordingUrl,
+        coverImage {
+            asset-> {
+                url
+            },
+            alt
+        },
+        slides,
+        attendees,
+        type,
+        tags
+    }`
+
+    const talks = await client.fetch(query)
+    return talks
 } 

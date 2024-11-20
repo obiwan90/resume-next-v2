@@ -1,45 +1,73 @@
-import { NextResponse } from "next/server";
-import { getAuth } from "@clerk/nextjs/server";
-import { commentService } from "@/lib/services/comment-service";
-import type { NextRequest } from "next/server";
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { auth } from '@clerk/nextjs/server'
 
-export async function GET(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const tags = searchParams.get('tags')?.split(',');
-
+export async function POST(req: Request) {
     try {
-        const comments = await commentService.getComments(
-            tags ? { tags } : undefined
-        );
-        return NextResponse.json(comments);
+        const { userId } = await auth()
+        if (!userId) {
+            return new NextResponse("Unauthorized", { status: 401 })
+        }
+
+        const { content } = await req.json()
+
+        // Get user from database using Clerk ID
+        const user = await prisma.user.findUnique({
+            where: {
+                clerkId: userId
+            }
+        })
+
+        if (!user) {
+            // Create user if not exists
+            const newUser = await prisma.user.create({
+                data: {
+                    clerkId: userId,
+                    name: "User", // You might want to get this from Clerk
+                    email: "user@example.com", // You might want to get this from Clerk
+                }
+            })
+
+            // Create comment with new user
+            const comment = await prisma.comment.create({
+                data: {
+                    content,
+                    userId: newUser.id,
+                },
+                include: {
+                    user: true,
+                    likes: true,
+                    replies: {
+                        include: {
+                            user: true
+                        }
+                    }
+                }
+            })
+
+            return NextResponse.json(comment)
+        }
+
+        // Create comment with existing user
+        const comment = await prisma.comment.create({
+            data: {
+                content,
+                userId: user.id,
+            },
+            include: {
+                user: true,
+                likes: true,
+                replies: {
+                    include: {
+                        user: true
+                    }
+                }
+            }
+        })
+
+        return NextResponse.json(comment)
     } catch (error) {
-        console.error('Error fetching comments:', error);
-        return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 });
-    }
-}
-
-export async function POST(request: NextRequest) {
-    const auth = getAuth(request);
-    const userId = auth.userId;
-
-    if (!userId) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    try {
-        const { content, tags } = await request.json();
-        const comment = await commentService.createComment({
-            content,
-            clerkUserId: userId,
-            tags: tags || []
-        });
-
-        return NextResponse.json(comment);
-    } catch (error) {
-        console.error('Error creating comment:', error);
-        return NextResponse.json(
-            { error: 'Failed to create comment' },
-            { status: 500 }
-        );
+        console.error('[COMMENTS_POST]', error)
+        return new NextResponse("Internal Error", { status: 500 })
     }
 } 

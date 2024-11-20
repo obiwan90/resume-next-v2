@@ -197,3 +197,369 @@ body {
   scrollbar-width: none;
   /* Firefox */
 }
+
+/* 添加平滑滚动效果 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 优化滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
+}
+
+/* 文字选中样式 */
+::selection {
+  background: hsl(var(--primary) / 0.2);
+  color: hsl(var(--primary));
+}
+
+/* 优化卡片悬浮效果 */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  @apply hover:shadow-primary/5 dark:hover:shadow-primary/10;
+}
+
+/* 渐变背景动画 */
+.gradient-bg {
+  background: linear-gradient(-45deg,
+      hsl(var(--primary) / 0.05),
+      hsl(var(--secondary) / 0.05),
+      hsl(var(--accent) / 0.05));
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 玻璃态效果 */
+.glass-effect {
+  @apply bg-background/80 backdrop-blur-sm border border-primary/10;
+}
+
+/* 渐变文字 */
+.gradient-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary/80 to-primary;
+}
+
+/* 卡片悬浮效果增强 */
+.card-hover-enhanced {
+  @apply transition-all duration-300;
+  @apply hover:shadow-lg hover:shadow-primary/5 dark:hover:shadow-primary/10;
+  @apply hover:-translate-y-1;
+  @apply hover:bg-accent/50;
+}
+
+/* 动态边框效果 */
+.border-gradient {
+  position: relative;
+  border-radius: var(--radius);
+}
+
+.border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(45deg,
+      hsl(var(--primary) / 0.3),
+      hsl(var(--primary) / 0.1),
+      hsl(var(--primary) / 0.3));
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+/* 动画持续时间变量 */
+:root {
+  --animation-duration: 30s;
+}
+
+/* 平滑过渡效果 */
+.smooth-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* 分层背景效果 */
+.layered-background {
+  position: relative;
+  background: linear-gradient(to bottom,
+      hsl(var(--background)),
+      hsl(var(--background)) 80%,
+      hsl(var(--muted)));
+}
+
+.layered-waves {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.layered-waves::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg,
+      hsl(var(--primary) / 0.05),
+      hsl(var(--secondary) / 0.05) 30%,
+      transparent 60%);
+  mask-image: radial-gradient(circle at 30% 30%,
+      black,
+      transparent 70%);
+}
+
+.layered-waves::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(-145deg,
+      hsl(var(--secondary) / 0.05),
+      hsl(var(--primary) / 0.05) 30%,
+      transparent 60%);
+  mask-image: radial-gradient(circle at 70% 70%,
+      black,
+      transparent 70%);
+}
+
+/* 悬浮导航栏效果 */
+.navbar-float {
+  @apply fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-7xl;
+  @apply rounded-xl shadow-lg shadow-primary/5;
+  @apply bg-background/70 backdrop-blur-md border border-primary/10;
+  @apply transition-all duration-300;
+}
+
+.navbar-float.scrolled {
+  @apply bg-background/80 backdrop-blur-md;
+}
+
+/* 添加网格背景样式 */
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, hsl(var(--primary) / 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--primary) / 0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* 添加渐变文字动画 */
+@keyframes gradient-text {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.gradient-text-animate {
+  background-size: 200% auto;
+  animation: gradient-text 4s linear infinite;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+@keyframes gradient-x {
+
+  0%,
+  100% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 15s linear infinite;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(circle at center, #1a1a1a 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* 添加到现有的 globals.css 中 */
+
+@keyframes grid-fade {
+
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.animate-grid-fade {
+  animation: grid-fade 8s ease-in-out infinite;
+}
+
+@keyframes noise {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  10% {
+    transform: translate(-5%, -5%);
+  }
+
+  20% {
+    transform: translate(-10%, 5%);
+  }
+
+  30% {
+    transform: translate(5%, -10%);
+  }
+
+  40% {
+    transform: translate(-5%, 15%);
+  }
+
+  50% {
+    transform: translate(-10%, 5%);
+  }
+
+  60% {
+    transform: translate(15%, 0);
+  }
+
+  70% {
+    transform: translate(0, 10%);
+  }
+
+  80% {
+    transform: translate(-15%, 0);
+  }
+
+  90% {
+    transform: translate(10%, 5%);
+  }
+}
+
+.animate-noise {
+  animation: noise 30s steps(10) infinite;
+}
+
+/* 浮动粒子效果 */
+.particles-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at center,
+      hsl(var(--primary) / 0.1) 0.5px,
+      transparent 0.5px);
+  background-size: 24px 24px;
+  animation: particles 20s linear infinite;
+}
+
+@keyframes particles {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-24px);
+  }
+}

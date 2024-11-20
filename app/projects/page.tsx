@@ -1,9 +1,9 @@
 import { getProjects } from '@/sanity/lib/api'
-import { AppProjectsPage } from '@/components/app-projects-page'
+import { ProjectsPageContent } from "@/components/projects-page-content"
+
+export const revalidate = 0
 
 export default async function ProjectsPage() {
     const projects = await getProjects()
-    console.log('Fetched projects:', projects)
-
-    return <AppProjectsPage projects={projects} />
+    return <ProjectsPageContent projects={projects} />
 } 

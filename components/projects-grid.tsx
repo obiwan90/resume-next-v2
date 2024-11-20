@@ -1,20 +1,19 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import Image from "next/image"
-import { Github, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Github, ExternalLink } from "lucide-react"
+import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 interface Project {
     _id: string
     title: string
-    slug: {
-        current: string
-    }
     description: string
-    coverImage?: {
+    coverImage: {
         asset: {
             url: string
         }
@@ -23,7 +22,6 @@ interface Project {
     projectUrl?: string
     githubUrl?: string
     tags: string[]
-    publishedAt: string
     isRecentUpdate: boolean
 }
 
@@ -31,66 +29,106 @@ interface ProjectsGridProps {
     projects: Project[]
 }
 
-export function ProjectsGrid({ projects }: ProjectsGridProps) {
+// 添加项目卡片组件
+const ProjectCard = ({ project, index }: { project: Project; index: number }) => {
     return (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project) => (
-                <motion.div
-                    key={project._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    whileHover={{ y: -5 }}
-                    transition={{ duration: 0.3 }}
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ y: -5 }}
+            className="h-full"
+        >
+            <Card className="group h-full overflow-hidden hover:shadow-lg transition-all duration-500 bg-card/50 backdrop-blur-sm border-primary/10">
+                {project.coverImage && (
+                    <div className="relative aspect-video overflow-hidden">
+                        <Image
+                            src={project.coverImage.asset.url}
+                            alt={project.coverImage.alt || project.title}
+                            fill
+                            className="object-cover transition-transform duration-700 group-hover:scale-110"
+                            priority={index < 6}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background/95 via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="absolute inset-0 p-6 flex flex-col justify-end transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 className="text-2xl font-bold text-white mb-3">{project.title}</h3>
+                            <p className="text-gray-200 line-clamp-3">{project.description}</p>
+                        </div>
+                    </div>
+                )}
+
+                <div className="p-6 space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                        {project.tags.map((tag) => (
+                            <Badge
+                                key={tag}
+                                variant="secondary"
+                                className="bg-primary/10 hover:bg-primary/20 transition-colors"
+                            >
+                                {tag}
+                            </Badge>
+                        ))}
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                        {project.githubUrl && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1 gap-2 group hover:border-primary/50"
+                                asChild
+                            >
+                                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
+                                    <Github className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                                    <span>Source Code</span>
+                                </a>
+                            </Button>
+                        )}
+                        {project.projectUrl && (
+                            <Button
+                                variant="default"
+                                size="sm"
+                                className="flex-1 gap-2 group"
+                                asChild
+                            >
+                                <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLink className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                    <span>Live Demo</span>
+                                </a>
+                            </Button>
+                        )}
+                    </div>
+                </div>
+            </Card>
+        </motion.div>
+    )
+}
+
+// 添加瀑布流布局组件
+const MasonryGrid = ({ children }: { children: React.ReactNode[] }) => {
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {children.map((child, index) => (
+                <div
+                    key={index}
+                    style={{
+                        gridRow: `span ${Math.floor(Math.random() * 1) + 1}`
+                    }}
                 >
-                    <Card className="overflow-hidden">
-                        <div className="relative aspect-video">
-                            <Image
-                                src={project.coverImage?.asset?.url || `https://picsum.photos/seed/${project._id}/800/600`}
-                                alt={project.coverImage?.alt || project.title}
-                                fill
-                                className="object-cover"
-                            />
-                            <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                                <div className="absolute inset-0 p-4">
-                                    <h3 className="text-lg font-bold text-white mb-2">{project.title}</h3>
-                                    <p className="text-sm text-gray-200 line-clamp-3">{project.description}</p>
-                                    <div className="absolute bottom-4 left-4 flex gap-2">
-                                        {project.githubUrl && (
-                                            <Button size="sm" variant="secondary" asChild>
-                                                <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                                                    <Github className="h-4 w-4 mr-1" />
-                                                    Code
-                                                </a>
-                                            </Button>
-                                        )}
-                                        {project.projectUrl && (
-                                            <Button size="sm" variant="secondary" asChild>
-                                                <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
-                                                    <FileText className="h-4 w-4 mr-1" />
-                                                    Doc
-                                                </a>
-                                            </Button>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="p-3">
-                            <div className="flex flex-wrap gap-1">
-                                {project.tags?.map((tag) => (
-                                    <Badge
-                                        key={tag}
-                                        variant="secondary"
-                                        className="text-xs px-2 py-0.5"
-                                    >
-                                        {tag}
-                                    </Badge>
-                                ))}
-                            </div>
-                        </div>
-                    </Card>
-                </motion.div>
+                    {child}
+                </div>
             ))}
         </div>
+    )
+}
+
+export function ProjectsGrid({ projects }: ProjectsGridProps) {
+    return (
+        <MasonryGrid>
+            {projects.map((project, index) => (
+                <ProjectCard key={project._id} project={project} index={index} />
+            ))}
+        </MasonryGrid>
     )
 } 
