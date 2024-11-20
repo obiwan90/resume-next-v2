@@ -35,7 +35,7 @@ export function SpeakingHeader({ commentsCount, likesCount }: SpeakingHeaderProp
                         </h1>
 
                         <p className="text-xl text-muted-foreground">
-                            Let's discuss technology and creativity together
+                            Let&apos;s discuss technology and creativity together
                         </p>
                     </motion.div>
 

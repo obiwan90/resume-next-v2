@@ -34,7 +34,7 @@ import {
 } from 'react-icons/si'
 import { FaJava } from 'react-icons/fa'
 import { HiMail } from 'react-icons/hi'
-import { Github, ExternalLink, Code2, Rocket, Star, Linkedin, ChevronRight, Briefcase, Award, ChevronUp } from "lucide-react"
+import { Github, ExternalLink, Code2, Rocket, Star, ChevronRight, Briefcase, Award, ChevronUp } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -165,29 +165,29 @@ interface PortfolioPageProps {
 }
 
 // 定义一些通用的动画变体
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-}
+// const fadeInUp = {
+//   initial: { opacity: 0, y: 20 },
+//   animate: { opacity: 1, y: 0 },
+//   transition: { duration: 0.5 }
+// }
 
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-}
+// const staggerContainer = {
+//   animate: {
+//     transition: {
+//       staggerChildren: 0.1
+//     }
+//   }
+// }
 
-const cardHover = {
-  hover: {
-    scale: 1.03,
-    transition: {
-      duration: 0.2,
-      ease: "easeInOut"
-    }
-  }
-}
+// const cardHover = {
+//   hover: {
+//     scale: 1.03,
+//     transition: {
+//       duration: 0.2,
+//       ease: "easeInOut"
+//     }
+//   }
+// }
 
 
 // 添加新的动画组件
