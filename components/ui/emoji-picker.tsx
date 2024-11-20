@@ -11,6 +11,15 @@ interface EmojiPickerProps {
     onChange: (emoji: string) => void
 }
 
+interface EmojiData {
+    id: string;
+    native: string;    // emoji 的原生表示
+    unified: string;   // emoji 的统一码
+    imageUrl?: string; // 可选的图片 URL
+    names?: string[];  // emoji 的名称列表
+    shortNames?: string[]; // 短名称列表
+}
+
 export function EmojiPicker({ onChange }: EmojiPickerProps) {
     const { theme } = useTheme()
 
@@ -31,7 +40,7 @@ export function EmojiPicker({ onChange }: EmojiPickerProps) {
             >
                 <Picker
                     data={data}
-                    onEmojiSelect={(emoji: any) => onChange(emoji.native)}
+                    onEmojiSelect={(emoji: EmojiData) => onChange(emoji.native)}
                     theme={theme === 'dark' ? 'dark' : 'light'}
                     previewPosition="none"
                     skinTonePosition="none"

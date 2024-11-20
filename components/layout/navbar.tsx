@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+// import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useRouter, usePathname } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { motion } from "framer-motion"
 import { Code2, Home, Briefcase, FolderGit2, MessageSquare, Palette } from "lucide-react"
 import { UserButton, useUser } from "@clerk/nextjs"
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar"
+// import {
+//     Avatar,
+//     AvatarFallback,
+//     AvatarImage,
+// } from "@/components/ui/avatar"
 
 const navItems = [
     {

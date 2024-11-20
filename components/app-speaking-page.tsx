@@ -9,13 +9,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import {
   MessageCircle,
-  Heart,
   Send,
   Clock,
   Code2,
-  // Image as ImageIcon,
   Smile,
-  Hash,
   Sparkles
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -49,8 +46,8 @@ interface Comment {
 const topics: { type: TopicType; icon: JSX.Element; color: string }[] = [
   { type: 'Tech', icon: <Code2 className="h-4 w-4" />, color: 'bg-blue-500' },
   { type: 'Career', icon: <Sparkles className="h-4 w-4" />, color: 'bg-green-500' },
-  { type: 'Life', icon: <Heart className="h-4 w-4" />, color: 'bg-pink-500' },
-  { type: 'Other', icon: <Hash className="h-4 w-4" />, color: 'bg-purple-500' }
+  // { type: 'Life', icon: <Heart className="h-4 w-4" />, color: 'bg-pink-500' },
+  // { type: 'Other', icon: <Hash className="h-4 w-4" />, color: 'bg-purple-500' }
 ]
 
 // 示例数据
@@ -143,7 +140,7 @@ const CommentCard = memo(({ comment, isReply = false, onExpand }: {
                 </span>
               </div>
               <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                <Heart className="h-4 w-4" />
+                {/* <Heart className="h-4 w-4" /> */}
                 <span>{comment.likes}</span>
               </Button>
             </div>
@@ -242,6 +239,17 @@ const ReplyInput = memo(({ value, onChange, onSubmit }: {
   </div>
 ))
 ReplyInput.displayName = 'ReplyInput'
+
+// 为 emoji 参数定义具体类型
+interface EmojiData {
+  id: string
+  native: string
+  unified: string
+}
+
+const onEmojiSelect = (emoji: EmojiData) => {
+  // 处理表情选择逻辑
+}
 
 export function AppSpeakingPage() {
   const [newComment, setNewComment] = useState("")

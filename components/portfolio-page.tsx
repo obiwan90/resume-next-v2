@@ -2,23 +2,15 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Image from "next/image"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   SiReact,
-  SiNextdotjs,
   SiTypescript,
   SiTailwindcss,
   SiNodedotjs,
-  SiPostgresql,
-  SiFlutter,
-  SiNuxtdotjs,
-  SiVercel,
-  SiPrisma,
-  SiSupabase,
   SiGithub,
   SiLinkedin,
   SiSpring,
@@ -29,9 +21,6 @@ import {
   SiMysql,
   SiRedis,
   SiElasticsearch,
-  SiSanity,
-  SiClerk,
-  SiFirebase,
   SiAmazon,
   SiDocker,
   SiKubernetes,
@@ -44,19 +33,9 @@ import {
   SiJira,
 } from 'react-icons/si'
 import { FaJava } from 'react-icons/fa'
-import { RiReactjsLine } from 'react-icons/ri'
 import { HiMail } from 'react-icons/hi'
-import { Github, ExternalLink, FileText, Sparkles, Code2, Rocket, Star, Mail, Linkedin, ChevronRight, Trophy, Briefcase, Award, ChevronUp } from "lucide-react"
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell
-} from 'recharts'
+import { Github, ExternalLink, Code2, Rocket, Star, Linkedin, ChevronRight, Briefcase, Award, ChevronUp } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
 const socialLinks = [
@@ -210,20 +189,6 @@ const cardHover = {
   }
 }
 
-// 自定义 Tooltip 组件
-const CustomTooltip = ({ active, payload }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-background/95 backdrop-blur-sm border border-border p-3 rounded-lg shadow-lg">
-        <p className="text-sm font-medium">{payload[0].payload.name}</p>
-        <p className="text-sm text-muted-foreground">
-          Proficiency: {payload[0].value}%
-        </p>
-      </div>
-    )
-  }
-  return null
-}
 
 // 添加新的动画组件
 const Card3D = ({ children, className }: { children: React.ReactNode, className?: string }) => {

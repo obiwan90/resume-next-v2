@@ -30,9 +30,16 @@ interface Reply {
     hasLiked: boolean
 }
 
+interface User {
+    id: string
+    name: string
+    image: string
+    email?: string
+}
+
 interface CommentsContainerProps {
     initialComments: Comment[]
-    currentUser: any
+    currentUser: User
 }
 
 export function CommentsContainer({ initialComments, currentUser }: CommentsContainerProps) {
@@ -64,8 +71,8 @@ export function CommentsContainer({ initialComments, currentUser }: CommentsCont
                             createdAt: new Date().toISOString(),
                             user: {
                                 id: currentUser.id,
-                                name: currentUser.firstName || 'Anonymous',
-                                image: currentUser.imageUrl
+                                name: currentUser.name || 'Anonymous',
+                                image: currentUser.image
                             },
                             likes: 0,
                             hasLiked: false
@@ -100,7 +107,7 @@ export function CommentsContainer({ initialComments, currentUser }: CommentsCont
     return (
         <CommentList
             comments={comments}
-            currentUser={currentUser}
+            currentUserId={currentUser.id}
             onLike={handleLike}
             onReply={handleReply}
             onLikeReply={handleLikeReply}

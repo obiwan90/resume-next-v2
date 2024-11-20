@@ -1,5 +1,7 @@
 "use client"
 
+
+
 import { useState } from "react"
 import { Avatar } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -7,7 +9,7 @@ import { formatDate } from "@/lib/utils"
 import { Heart, MessageCircle, ChevronDown, ChevronUp } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Textarea } from "@/components/ui/textarea"
-import { commentService } from "@/lib/services/comment-service"
+// import { commentService } from "@/lib/services/comment-service"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { cn } from "@/lib/utils"
