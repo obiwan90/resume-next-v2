@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { EmojiPicker } from "@/components/ui/emoji-picker"
+import Image from 'next/image'
 
 interface CommentInputProps {
     user: {
@@ -61,11 +62,14 @@ export function CommentInput({ user, onCommentAdded }: CommentInputProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="flex gap-4">
                 <Avatar className="w-10 h-10 ring-2 ring-primary/10 ring-offset-2 ring-offset-background">
-                    <img
-                        src={user.imageUrl}
-                        alt={user.firstName}
-                        className="object-cover"
-                    />
+                    <div className="relative w-full h-full">
+                        <Image
+                            src={user.imageUrl}
+                            alt={user.firstName}
+                            fill
+                            className="object-cover"
+                        />
+                    </div>
                 </Avatar>
                 <div className="flex-1">
                     <div className="relative">

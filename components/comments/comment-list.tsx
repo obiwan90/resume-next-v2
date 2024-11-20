@@ -15,6 +15,7 @@ import { toast } from "react-hot-toast"
 import { cn } from "@/lib/utils"
 import { EmojiPicker } from "@/components/ui/emoji-picker"
 import { Comment } from '@/types/comment'
+import Image from 'next/image'
 
 interface CommentListProps {
     comments: Comment[]
@@ -188,12 +189,15 @@ export function CommentList({
                     className="group bg-card/30 hover:bg-card/50 backdrop-blur-sm rounded-xl p-6 transition-all duration-300 border border-border/50"
                 >
                     <div className="flex gap-4">
-                        <Avatar className="w-10 h-10 ring-2 ring-primary/10 ring-offset-2 ring-offset-background">
-                            <img
-                                src={comment.user.avatarUrl || "/default-avatar.png"}
-                                alt={comment.user.name}
-                                className="object-cover"
-                            />
+                        <Avatar className="w-10 h-10 ring-2 ring-primary/10">
+                            <div className="relative w-full h-full">
+                                <Image
+                                    src={comment.user.avatarUrl || "/default-avatar.png"}
+                                    alt={comment.user.name}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
                         </Avatar>
                         <div className="flex-1 space-y-4">
                             <div>
@@ -319,11 +323,14 @@ export function CommentList({
                                                 className="flex gap-4 bg-background/30 backdrop-blur-sm rounded-lg p-4"
                                             >
                                                 <Avatar className="w-8 h-8 ring-1 ring-primary/10">
-                                                    <img
-                                                        src={reply.user.avatarUrl || "/default-avatar.png"}
-                                                        alt={reply.user.name}
-                                                        className="object-cover"
-                                                    />
+                                                    <div className="relative w-full h-full">
+                                                        <Image
+                                                            src={reply.user.avatarUrl || "/default-avatar.png"}
+                                                            alt={reply.user.name}
+                                                            fill
+                                                            className="object-cover"
+                                                        />
+                                                    </div>
                                                 </Avatar>
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2">
