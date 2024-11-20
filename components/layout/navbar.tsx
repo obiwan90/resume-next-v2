@@ -116,7 +116,6 @@ export function Navbar() {
                             <div className="ml-2">
                                 <UserButton
                                     afterSignOutUrl="/"
-                                    afterSignInUrl="/speaking"
                                     appearance={{
                                         elements: {
                                             avatarBox: "w-8 h-8"

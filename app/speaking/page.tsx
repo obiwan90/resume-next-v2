@@ -22,7 +22,7 @@ export default async function SpeakingPage() {
             userId ? commentService.getUserLikes(userId) : []
         ])
 
-        const totalLikes = comments.reduce((acc, comment) =>
+        const totalLikes = comments.reduce((acc: number, comment: { likes?: any[] }) =>
             acc + (comment.likes?.length || 0), 0
         )
 

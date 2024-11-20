@@ -36,7 +36,7 @@ export const commentService = {
                     commentId: true
                 }
             })
-            return likes.map(like => like.commentId)
+            return likes.map((like: { commentId: string }) => like.commentId)
         } catch (error) {
             console.error('Error fetching user likes:', error)
             throw error
