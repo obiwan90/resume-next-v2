@@ -240,17 +240,6 @@ const ReplyInput = memo(({ value, onChange, onSubmit }: {
 ))
 ReplyInput.displayName = 'ReplyInput'
 
-// 为 emoji 参数定义具体类型
-interface EmojiData {
-  id: string
-  native: string
-  unified: string
-}
-
-const onEmojiSelect = (emoji: EmojiData) => {
-  // 处理表情选择逻辑
-}
-
 export function AppSpeakingPage() {
   const [newComment, setNewComment] = useState("")
   const [expandedComment, setExpandedComment] = useState<string | null>(null)
@@ -301,7 +290,7 @@ export function AppSpeakingPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          Let's Talk
+          Let&apos;s Talk
         </motion.h1>
         <motion.p
           className="text-xl text-muted-foreground italic"
