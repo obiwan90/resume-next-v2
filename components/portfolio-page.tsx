@@ -536,7 +536,7 @@ const HeroSection = ({ typedName, fullName }: { typedName: string; fullName: str
                 </motion.span>
               </motion.h1>
               <p className="text-xl md:text-2xl text-muted-foreground">
-                Full Stack Developer & UI/UX Enthusiast
+                Full Stack Developer
               </p>
             </motion.div>
 
@@ -586,7 +586,7 @@ const HeroSection = ({ typedName, fullName }: { typedName: string; fullName: str
 
 export function PortfolioPage({ recentProjects, currentExperience }: PortfolioPageProps) {
   const [typedName, setTypedName] = useState("")
-  const fullName = "Developer Name"
+  const fullName = "HHi, I'm Obiwan"
 
   useEffect(() => {
     const timeout = setTimeout(() => {

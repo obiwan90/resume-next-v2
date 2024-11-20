@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { usePathname } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { motion } from "framer-motion"
 import { Code2, Home, Briefcase, FolderGit2, MessageSquare, Palette } from "lucide-react"
@@ -47,6 +47,7 @@ export function Navbar() {
     const pathname = usePathname()
     const [isScrolled, setIsScrolled] = useState(false)
     const { user } = useUser()
+    const router = useRouter()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -55,6 +56,11 @@ export function Navbar() {
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
+
+    // 预加载路由
+    const prefetchRoute = (href: string) => {
+        router.prefetch(href)
+    }
 
     return (
         <header className={cn(
@@ -98,6 +104,7 @@ export function Navbar() {
                                 "md:px-3 md:py-1.5",
                                 "px-2 py-2"
                             )}
+                            onMouseEnter={() => prefetchRoute(item.href)}
                         >
                             {item.icon}
                             <span className="hidden md:inline">{item.name}</span>

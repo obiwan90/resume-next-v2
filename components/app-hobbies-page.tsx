@@ -66,6 +66,15 @@ const visitedPlaces: Place[] = [
   { name: "Giza", coordinates: [31.1342, 29.9792] as Coordinates, status: "planned" }
 ]
 
+// 更新国家图片映射
+const countryImages = {
+  Japan: "https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=1600&h=900",  // 涩谷十字路口夜景
+  Cambodia: "https://images.unsplash.com/photo-1540525080980-b97c4aa2e284?q=80&w=1600&h=900",  // 吴哥窟正面宏伟景观
+  Philippines: "https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?q=80&w=1600&h=900", // 长滩岛
+  Thailand: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?q=80&w=1600&h=900", // 大皇宫
+  Malaysia: "https://images.unsplash.com/photo-1604999333679-b86d54738315?q=80&w=1600&h=900"  // 吉隆坡街景与双子塔
+}
+
 export function AppHobbiesPage() {
   const [activeHobby, setActiveHobby] = useState<'gaming' | 'travel'>('travel')
   const [tooltipContent, setTooltipContent] = useState("")
@@ -380,8 +389,8 @@ export function AppHobbiesPage() {
                   <Card key={spot.country} className="overflow-hidden group hover:shadow-lg transition-all duration-300">
                     <div className="relative aspect-video">
                       <Image
-                        src={`https://picsum.photos/seed/${spot.country.toLowerCase()}/400/225`}
-                        alt={spot.country}
+                        src={countryImages[spot.country as keyof typeof countryImages]}
+                        alt={`${spot.country} landscape`}
                         fill
                         className="object-cover transition-transform duration-300 group-hover:scale-110"
                       />
