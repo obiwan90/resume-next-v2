@@ -15,14 +15,13 @@ export async function POST(
     }
 
     try {
-        const result = await commentService.toggleLike(
-            params.commentId,
-            userId
-        );
-
+        const result = await commentService.toggleLike(params.commentId, userId);
         return NextResponse.json({ liked: result });
     } catch (error) {
         console.error('Error toggling like:', error);
+        if (error instanceof Error && error.message === 'User not found in database') {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
         return NextResponse.json({ error: 'Failed to toggle like' }, { status: 500 });
     }
 } 

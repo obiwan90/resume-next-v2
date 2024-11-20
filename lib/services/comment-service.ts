@@ -63,9 +63,17 @@ class CommentService {
     }
 
     async toggleLike(commentId: string, userId: string) {
+        const user = await prisma.user.findUnique({
+            where: { clerkId: userId }
+        })
+
+        if (!user) {
+            throw new Error('User not found in database')
+        }
+
         const existingLike = await prisma.like.findFirst({
             where: {
-                userId,
+                userId: user.id,
                 commentId
             }
         })
@@ -81,7 +89,7 @@ class CommentService {
 
         await prisma.like.create({
             data: {
-                userId,
+                userId: user.id,
                 commentId
             }
         })
