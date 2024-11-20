@@ -16,14 +16,16 @@ export async function POST(
 
     try {
         const { content } = await request.json();
+
         const reply = await commentService.addReply({
             content,
-            clerkUserId: userId,
+            userId,
             commentId: params.commentId
         });
+
         return NextResponse.json(reply);
     } catch (error) {
-        console.error('Error creating reply:', error);
-        return NextResponse.json({ error: 'Failed to create reply' }, { status: 500 });
+        console.error('Error adding reply:', error);
+        return NextResponse.json({ error: 'Failed to add reply' }, { status: 500 });
     }
 } 
