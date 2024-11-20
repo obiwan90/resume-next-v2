@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import { Pool } from '@neondatabase/serverless'
 import { PrismaNeon } from '@prisma/adapter-neon'
-import ws from 'ws'
 import { neonConfig } from '@neondatabase/serverless'
+import ws from 'ws'
 
 // 配置 WebSocket
 if (!globalThis.WebSocket) {
@@ -15,7 +15,7 @@ declare global {
     var prisma: PrismaClient | undefined
 }
 
-// 创建 Prisma 客户端实例
+// 创建 Prisma 客户端
 const prisma = globalThis.prisma || new PrismaClient({
     datasources: {
         db: {
