@@ -6,22 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Github, ExternalLink } from "lucide-react"
 import Image from "next/image"
-
-interface Project {
-    _id: string
-    title: string
-    description: string
-    coverImage: {
-        asset: {
-            url: string
-        }
-        alt: string
-    }
-    projectUrl?: string
-    githubUrl?: string
-    tags: string[]
-    isRecentUpdate: boolean
-}
+import { Project } from "../types"
 
 interface ProjectsGridProps {
     projects: Project[]

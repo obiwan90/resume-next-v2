@@ -1,28 +1,9 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ProjectsGrid } from "@/components/projects-grid"
+import { ProjectsGrid } from "./projects-grid"
 import { Code2, Sparkles, Rocket } from "lucide-react"
-
-interface Project {
-  _id: string
-  title: string
-  slug: {
-    current: string
-  }
-  description: string
-  coverImage?: {
-    asset: {
-      url: string
-    }
-    alt: string
-  }
-  projectUrl?: string
-  githubUrl?: string
-  tags: string[]
-  publishedAt: string
-  isRecentUpdate: boolean
-}
+import { Project } from "../types"
 
 interface AppProjectsPageProps {
   projects: Project[]
