@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ExperienceTimeline } from "@/components/experience-timeline"
+// import { ExperienceTimeline } from "@/components/experience-timeline"
 import { Briefcase, Star, History, Sparkles } from "lucide-react"
 
 interface Project {
@@ -116,13 +116,13 @@ export function AppExperiencePage({ experiences }: AppExperiencePageProps) {
       </div>
 
       {/* 时间线 */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
         <ExperienceTimeline experiences={experiences} />
-      </motion.div>
+      </motion.div> */}
 
       {/* 底部装饰 */}
       <motion.div
