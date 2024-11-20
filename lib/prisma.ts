@@ -1,25 +1,17 @@
 import { PrismaClient } from '@prisma/client'
 
-const prismaClientSingleton = () => {
-    return new PrismaClient({
-        log: ['query', 'error', 'warn'],
-        datasources: {
-            db: {
-                url: process.env.DATABASE_URL
-            }
-        }
-    })
-}
-
+// 声明全局变量
 declare global {
     // eslint-disable-next-line no-var
-    var prisma: undefined | ReturnType<typeof prismaClientSingleton>
+    var prisma: PrismaClient | undefined
 }
 
-const prisma = globalThis.prisma ?? prismaClientSingleton()
+// 创建 Prisma 客户端实例
+const prisma = globalThis.prisma || new PrismaClient()
 
-export { prisma }
-
+// 在开发环境下保存到全局变量，避免热重载创建多个实例
 if (process.env.NODE_ENV !== 'production') {
     globalThis.prisma = prisma
 }
+
+export { prisma }

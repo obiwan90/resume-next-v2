@@ -4,7 +4,9 @@ import { auth } from '@clerk/nextjs/server'
 import { commentService } from "@/lib/services/comment-service";
 import type { NextRequest } from "next/server";
 
-export async function GET(request: NextRequest) {
+export const runtime = 'nodejs'
+
+export async function GET() {
     try {
         const comments = await commentService.getComments();
         return NextResponse.json(comments);
@@ -17,7 +19,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const { content, tags } = await request.json();
-        const comment = await commentService.createComment(content, tags || []);
+        const comment = await commentService.createComment(content, tags);
         return NextResponse.json(comment);
     } catch (error) {
         console.error('Error creating comment:', error);
