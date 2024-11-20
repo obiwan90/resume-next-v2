@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
-import { Gamepad2, Plane, Trophy, Star, Clock, MapPin, CheckCircle2, Circle, Dices } from 'lucide-react'
+// import { Gamepad2, Plane, Trophy, Star, Clock, MapPin, CheckCircle2, Circle, Dices } from 'lucide-react'
+import { Gamepad2, Plane, Trophy, Star, Clock, MapPin } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import {
   ComposableMap,

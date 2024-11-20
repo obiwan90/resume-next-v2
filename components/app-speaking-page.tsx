@@ -13,7 +13,7 @@ import {
   Send,
   Clock,
   Code2,
-  Image as ImageIcon,
+  // Image as ImageIcon,
   Smile,
   Hash,
   Sparkles
