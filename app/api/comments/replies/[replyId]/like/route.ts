@@ -15,7 +15,11 @@ export async function POST(
     }
 
     try {
-        const result = await commentService.toggleReplyLike(userId, params.replyId);
+        const result = await commentService.toggleReplyLike({
+            userId,
+            replyId: params.replyId
+        });
+
         return NextResponse.json(result);
     } catch (error) {
         console.error('Error toggling reply like:', error);

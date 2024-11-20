@@ -155,5 +155,51 @@ export const commentService = {
             console.error('Error toggling like:', error)
             throw error
         }
+    },
+
+    // 添加回复点赞切换方法
+    async toggleReplyLike({ userId, replyId }: { userId: string; replyId: string }) {
+        try {
+            // 首先查找用户
+            const user = await prisma.user.findUnique({
+                where: {
+                    clerkId: userId
+                }
+            })
+
+            if (!user) {
+                throw new Error('User not found')
+            }
+
+            // 查找是否已经点赞
+            const existingLike = await prisma.like.findFirst({
+                where: {
+                    userId: user.id,
+                    replyId
+                }
+            })
+
+            if (existingLike) {
+                // 如果已经点赞，则取消点赞
+                await prisma.like.delete({
+                    where: {
+                        id: existingLike.id
+                    }
+                })
+                return false
+            } else {
+                // 如果未点赞，则添加点赞
+                await prisma.like.create({
+                    data: {
+                        userId: user.id,
+                        replyId
+                    }
+                })
+                return true
+            }
+        } catch (error) {
+            console.error('Error toggling reply like:', error)
+            throw error
+        }
     }
 } 
