@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Image from "next/image"
-import { Gamepad2, Plane, Trophy, Star, Clock, MapPin, CheckCircle2, Circle } from 'lucide-react'
+import { Gamepad2, Plane, Trophy, Star, Clock, MapPin, CheckCircle2, Circle, Dices } from 'lucide-react'
 import { Badge } from "@/components/ui/badge"
 import {
   ComposableMap,
@@ -135,25 +135,83 @@ export function AppHobbiesPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-8"
+      className="space-y-16"
     >
-      <div className="space-y-2">
-        <motion.h1
-          className="text-4xl font-bold"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Hobbies & Interests
-        </motion.h1>
-        <motion.p
-          className="text-xl text-muted-foreground italic"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          My Passions Beyond Code
-        </motion.p>
+      <div className="flex flex-col space-y-4 py-8">
+        <div className="relative h-[200px] rounded-xl overflow-hidden">
+          {/* 背景图片 */}
+          <div className="absolute inset-0">
+            <Image
+              src="/images/hobbies-banner.jpg"
+              alt="Hobbies Banner"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
+          </div>
+
+          {/* 内容区域 */}
+          <div className="relative h-full flex items-center">
+            <div className="container flex items-center gap-6 px-4">
+              {/* 左侧图标组 */}
+              <div className="hidden md:flex flex-col items-center justify-center p-4 bg-background/80 backdrop-blur-sm rounded-xl border border-border/50">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Gamepad2 className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Plane className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <Trophy className="w-6 h-6 text-primary" />
+                  </div>
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <MapPin className="w-6 h-6 text-primary" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 右侧文字内容 */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <motion.h1
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="text-4xl font-bold tracking-tight"
+                  >
+                    Hobbies & Interests
+                  </motion.h1>
+                  <div className="hidden sm:block h-8 w-[1px] bg-border"></div>
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="hidden sm:flex items-center gap-2"
+                  >
+                    <Badge variant="secondary" className="px-3 py-1">
+                      <Gamepad2 className="w-3 h-3 mr-1" />
+                      Gaming
+                    </Badge>
+                    <Badge variant="secondary" className="px-3 py-1">
+                      <Plane className="w-3 h-3 mr-1" />
+                      Travel
+                    </Badge>
+                  </motion.div>
+                </div>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                  className="text-lg text-muted-foreground"
+                >
+                  My Passions Beyond Code
+                </motion.p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Hobby Selection */}
